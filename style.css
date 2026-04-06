@@ -1,0 +1,775 @@
+/* Общие сбросы и переменные (для тёмной темы) */
+:root {
+  --bg-color: #0f111a; /* Глубокий тёмный фон */
+  --header-bg: rgba(15, 17, 26, 0.95); /* Чуть светлее, для шапки */
+  --accent-purple: #8e2de2;
+  --accent-blue: #4a00e0;
+  --text-color: #ffffff;
+  --text-w: #ffffff; /* Белая часть лого */
+  --text-m: #46a1df; /* Синяя часть лого (под цвет колбы) */
+  --glass-btn: rgba(255, 255, 255, 0.1);
+  --glass-btn-hover: rgba(255, 255, 255, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh; /* Чтобы фон был на весь экран */
+  padding-top: 70px; /* Отступ под фиксированный хедер */
+}
+
+/* Стилизация Хедера */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: var(--header-bg);
+  backdrop-filter: blur(10px); /* Эффект матового стекла */
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 600px; /* Ограничим ширину для Mini App */
+  margin: 0 auto; /* Центрируем */
+  padding: 0 16px;
+}
+
+/* Стилизация Логотипа */
+.logo-wrapper {
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  user-select: none;
+}
+
+.logo-wrapper:active {
+  transform: scale(0.96); /* Эффект нажатия */
+}
+
+.logo-text-w {
+  color: var(--text-w);
+}
+
+.logo-text-m {
+  color: var(--text-m);
+}
+
+/* Стилизация Кнопок Действий */
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.icon-btn {
+  background: var(--glass-btn);
+  border: none;
+  border-radius: 12px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  color: var(--text-color); /* Для SVG */
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.icon-btn:hover {
+  background: var(--glass-btn-hover);
+}
+
+.icon-btn:active {
+  transform: scale(0.95); /* Эффект нажатия */
+}
+
+.icon-svg {
+  display: block;
+}
+
+/* Стилизация Бейджа Корзины (неоновый градиент) */
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  color: white;
+  font-size: 10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--header-bg); /* Чтобы не сливался */
+  box-shadow: 0 0 10px rgba(142, 45, 226, 0.5); /* Лёгкое неоновое свечение */
+}
+
+/* HERO SECTION */ 
+
+.hero {
+  padding: 40px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.premium-badge {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #888;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.premium-badge .dot {
+  width: 8px;
+  height: 8px;
+  background: #46a1df;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #46a1df;
+}
+
+.hero-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #8e2de2, #46a1df);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  color: #888;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 40px;
+  max-width: 320px;
+}
+
+/* Стили кнопок */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.btn {
+  border: none;
+  border-radius: 16px;
+  padding: 18px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.action-buttons .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px 12px; /* Чуть меньше горизонтальный паддинг */
+    border-radius: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    white-space: nowrap; /* СТРОГО в одну строку */
+    gap: 10px; /* Расстояние между иконкой и текстом */
+}
+
+/* Фикс размера текста для мобильных устройств */
+@media (max-width: 480px) {
+    .action-buttons .btn {
+        font-size: 13.5px !important; /* Уменьшаем, чтобы влезло */
+        letter-spacing: -0.3px; /* Немного сужаем буквы */
+    }
+
+    .action-buttons svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0; /* Чтобы иконка не сжималась, когда тексту тесно */
+    }
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #8e2de2, #46a1df);
+  box-shadow: 0 10px 20px rgba(142, 45, 226, 0.2);
+}
+
+.btn-secondary {
+  background: rgba(70, 161, 223, 0.1);
+  border: 1px solid rgba(70, 161, 223, 0.3);
+  color: #46a1df;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px); /* Легкий подъем вверх */
+    box-shadow: 0 15px 30px rgba(142, 45, 226, 0.4); /* Усиливаем тень */
+    filter: brightness(1.1); /* Делаем градиент чуть ярче */
+}
+
+.btn-primary:active {
+    transform: translateY(1px); /* Эффект нажатия */
+}
+
+.btn-secondary:hover {
+    background: rgba(70, 161, 223, 0.2); /* Делаем фон чуть плотнее */
+    border-color: rgba(70, 161, 223, 0.6); /* Проявляем рамку сильнее */
+    color: #fff; /* Текст становится белым для контраста */
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1); /* Легкий налет "стекла" */
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.02); /* Микро-увеличение */
+}
+
+/* При наведении на любую кнопку в блоке */
+.action-buttons .btn:hover svg {
+    transform: rotate(15deg) scale(1.1); /* Иконка чуть поворачивается и растет */
+    transition: transform 0.3s ease;
+}
+
+/* MODAL */
+
+/* Затемнение фона при открытой модалке */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Полупрозрачный чёрный */
+  backdrop-filter: blur(4px); /* Лёгкое размытие */
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* Окно прижато к низу (Bottom Sheet) */
+  visibility: hidden; /* Скрыто по умолчанию */
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Когда модалка активна */
+.modal-overlay.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Само окно (Bottom Sheet) */
+.modal-content {
+  background: rgba(20, 22, 32, 0.95); /* Тёмный, "стеклянный" фон */
+  width: 100%;
+  max-width: 600px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 30px;
+  position: relative;
+  transform: translateY(100%); /* Убрано вниз */
+  transition: transform 0.3s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: none;
+}
+
+/* Анимация вылета */
+.modal-overlay.active .modal-content {
+  transform: translateY(0); /* Возвращаем на место */
+}
+
+/* Кнопка закрытия (крестик) */
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: #888;
+  font-size: 28px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Тело модалки */
+.modal-body {
+  margin-top: 10px;
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.modal-subtitle {
+  color: #888;
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 24px;
+}
+
+/* Стили полей ввода (Inputs) */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03); /* Тёмные инпуты */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 16px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.form-group input::placeholder {
+  color: #666;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #46a1df; /* Подсветка при фокусе */
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Кнопка Отправить (как главная кнопка с градиентом) */
+.btn-submit {
+  border: none;
+  border-radius: 16px;
+  padding: 18px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #8e2de2, #46a1df);
+  box-shadow: 0 10px 20px rgba(142, 45, 226, 0.2);
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn-submit:active {
+  transform: scale(0.97);
+}
+
+/* Начальное состояние: блок прозрачный и чуть ниже */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+/* Состояние, когда блок в зоне видимости */
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Стили для уведомления */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(150px); /* Спрятано */
+    width: 90%;
+    max-width: 360px;
+    background: rgba(25, 28, 41, 0.9);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s;
+    opacity: 0;
+}
+
+.toast-container.active {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-icon {
+    background: linear-gradient(135deg, #8e2de2, #46a1df);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 0 15px rgba(142, 45, 226, 0.4);
+}
+
+.toast-title {
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.toast-desc {
+    color: #888;
+    font-size: 13px;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(to right, #8e2de2, #46a1df);
+    transform-origin: left;
+    transform: scaleX(0);
+}
+
+/* Анимация полоски */
+.toast-container.active .toast-progress {
+    animation: toast-progress-anim 4s linear forwards;
+}
+
+/* Красный стиль для тоста при ошибке */
+/* === Обновленный стиль ошибки для тоста === */
+#toast.error {
+    background: #b30000 !important; /* Насыщенный красный */
+}
+
+/* Белый текст заголовка */
+#toast.error .toast-title {
+    color: #fff !important;
+}
+
+/* СТАЛ БЕЛЫМ: Текст описания */
+#toast.error .toast-desc {
+    color: rgba(255, 255, 255, 0.9) !important; /* Теперь он читабелен */
+}
+
+/* Трансформация иконки в крестик */
+#toast.error .toast-icon {
+    background: #fff !important; /* Белый круг */
+    color: #ff4d4d !important; /* Красный крестик inside */
+}
+
+/* Заменяем Unicode-галочку на крестик через псевдоэлемент */
+#toast.error .toast-icon::after {
+    content: '✕' !important; /* Unicode символ крестика */
+    font-size: 16px;
+    font-weight: bold;
+}
+@keyframes toast-progress-anim {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+
+/* Общие стили для секции */
+.benefits-section {
+    padding: 20px;
+    margin-top: 10px;
+    margin-bottom: 20px; /* Отступ перед товарами */
+}
+
+/* Общие стили для секции */
+.benefits-section {
+    padding: 20px;
+    margin: 10px 0 20px 0;
+}
+
+/* Базовая сетка (для мобильных — одна колонка) */
+.benefits-grid {
+    display: grid; /* Включаем сетку */
+    grid-template-columns: repeat(2, 1fr); /* Две колонки одинаковой ширины */
+    gap: 20px; /* Отступ между карточками, подправь под себя */
+}
+/* Стили карточки */
+.benefit-card {
+    background-color: #171B20;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+    min-height: 120px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.benefit-icon {
+    margin-bottom: 12px;
+}
+
+.benefit-title {
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.benefit-desc {
+    color: #8A9099;
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+/* === МАГИЯ ДЛЯ ДЕКСTOPА (Экраны шире 768px) === */
+@media (max-width: 767px) {
+    
+    /* Блок преимуществ в одну колонку */
+    .benefits-grid {
+        display: flex;
+        flex-direction: column;
+        grid-template-columns: 1fr; /* На всякий случай сбрасываем грид */
+        gap: 12px;
+    }
+
+    /* Блок товаров в одну колонку */
+    .product-grid {
+        display: flex;
+        flex-direction: column;
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Подправляем карточки под узкий экран */
+    .benefit-card, .product-card {
+        width: 100%;
+        max-width: none;
+    }
+
+    /* Текст в преимуществах выравниваем по левому краю для удобства */
+    .benefit-card {
+        align-items: flex-start;
+        text-align: left;
+        padding: 20px;
+        min-height: auto;
+    }
+}
+
+
+/* ТОВАР */
+.products {
+    padding: 20px;
+}
+
+.section-title {
+    margin-bottom: 40px;
+    text-align: center;
+    font-size: 24px;
+}
+
+.product-grid {
+    display: grid;
+    /* Две колонки по умолчанию для десктопа */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 24px; /* Чуть больше отступ, чтобы карточки "дышали" */
+}
+.product-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.product-card:active {
+    transform: scale(0.98);
+}
+
+.product-image {
+    height: 180px;
+    background: #1a1d29;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.product-image img {
+    max-height: 80%;
+    object-fit: contain;
+}
+
+.product-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--accent-purple);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.product-info {
+    padding: 16px;
+}
+
+.product-info h3 {
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+
+.product-info p {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: 800;
+    color: #46a1df;
+}
+
+.add-to-cart-simple {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Стили для модалки товара */
+.product-detail img {
+    width: 100%;
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.btn-add-cart {
+    width: 100%;
+    margin-top: 20px;
+    /* используй те же стили что у btn-primary */
+}
+
+/* === МОБИЛЬНАЯ ВЕРСТКА ДЛЯ ТОВАРОВ (строго в колонку) === */
+@media (max-width: 767px) {
+    /* Растягиваем контейнер на весь экран мобилки */
+    .products {
+        padding: 10px;
+    }
+
+    /* Узел, который командует сеткой товаров */
+    .product-grid {
+        display: flex;
+        flex-direction: column; /* Все товары строго друг под другом */
+        gap: 16px; /* Расстояние между карточками */
+    }
+
+    /* Делаем карточку товара удобной для мобильного скроллинга */
+    .product-card {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        border-radius: 16px;
+    }
+
+    /* Высота картинки на мобилке, чтобы не занимала весь экран */
+    .product-image {
+        height: 200px;
+    }
+
+    /* Текст и кнопка в карточке */
+    .product-info {
+        padding: 15px;
+    }
+
+    .product-info h3 {
+        font-size: 18px;
+        margin-bottom: 4px;
+    }
+
+    /* Чтобы кнопка корзины была удобной для нажатия пальцем */
+    .add-to-cart-simple {
+        width: 44px;
+        height: 44px;
+    }
+}

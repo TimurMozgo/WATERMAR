@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WATERMAR — Очистка воды</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-wrapper" id="main-logo">
+                <span class="logo-text-w">WATER</span><span class="logo-text-m">MAR</span>
+            </div>
+            
+            <div class="header-actions">
+                <button class="icon-btn" id="cart-btn" onclick="openCart()">
+                    <svg class="icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span class="cart-badge" id="cart-count">0</span>
+                </button>
+                
+                <button class="icon-btn" id="menu-btn">
+                    <svg class="icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="modal-overlay" id="cart-modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCart()">&times;</button>
+            <div class="modal-body">
+                <h2 class="modal-title">Ваша корзина</h2>
+                <div id="cart-items-list" class="cart-items-list">
+                    <p style="color: #666; text-align: center; padding: 20px;">Корзина пока пуста...</p>
+                </div>
+                
+                <div class="cart-total" id="cart-total-block" style="display: none;">
+                    <div class="total-line" style="display: flex; justify-content: space-between; font-weight: 800; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
+                        <span>Итого:</span>
+                        <span id="total-price-sum">0 ₴</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="checkoutCart()" style="width: 100%; margin-top: 15px;">
+                        Оформить заказ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="hero">
+        <div class="container">
+            <div class="premium-badge">
+                <span class="dot"></span> Премиальные системы очистки
+            </div>
+
+            <h1 class="hero-title">
+                Чистая вода <br>
+                <span class="gradient-text">высокие технологии</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                Профессиональное оборудование для очистки воды. Бытовые фильтры, коттеджные станции и промышленные системы.
+            </p>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="master-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Вызвать мастера на объект
+                </button>
+
+                <button class="btn btn-secondary" id="analysis-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v8L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45L14 10V2"></path><line x1="8.5" y1="2" x2="15.5" y2="2"></line><line x1="7" y1="13" x2="17" y2="13"></line></svg>
+                    Записаться на анализ воды
+                </button>
+
+                <button class="btn btn-outline" id="call-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    Заказать звонок с мастером
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content" id="modal-content">
+            <button class="modal-close" id="modal-close-btn" onclick="closeModal()">&times;</button>
+            
+            <div class="modal-body">
+                <h2 class="modal-title" id="modal-title">Заявка</h2>
+                <p class="modal-subtitle">Оставьте ваши контакты, и мы свяжемся с вами в течение 15 минут.</p>
+                
+                <form class="modal-form" id="order-form">
+                    <div class="form-group">
+                        <input type="text" id="user-name" name="name" placeholder="Как вас зовут?" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="tel" id="user-phone" name="phone" placeholder="+380 (__) ___-__-__" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">
+                        <span>Отправить заявку</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОКНО О ПОДТВЕРЖДЕНИИ ЗАКАЗА -->
+    <div id="toast" class="toast-container">
+        <div class="toast-content">
+            <div class="toast-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="toast-text">
+                <div class="toast-title">Заявка принята!</div>
+                <div class="toast-desc">Мы свяжемся с вами в ближайшее время</div>
+            </div>
+        </div>
+        <div class="toast-progress"></div>
+    </div>
+
+
+    <div class="benefits-section">
+        <div class="benefits-grid">
+            
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#26EFE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <h3 class="benefit-title">Гарантия 3 года</h3>
+                <p class="benefit-desc">На всё оборудование и монтаж</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#26EFE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <h3 class="benefit-title">Установка за 1 день</h3>
+                <p class="benefit-desc">Профессиональный монтаж</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#26EFE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="7"></circle>
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                    </svg>
+                </div>
+                <h3 class="benefit-title">Сертификация</h3>
+                <p class="benefit-desc">Все товары сертифицированы</p>
+            </div>
+
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#26EFE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <polyline points="17 11 19 13 23 9"></polyline>
+                    </svg>
+                </div>
+                <h3 class="benefit-title">3000+ клиентов</h3>
+                <p class="benefit-desc">Доверяют нашему качеству</p>
+            </div>
+
+        </div>
+    </div>
+
+    <section class="products reveal">
+        <div class="container">
+            <h2 class="section-title">Популярные решения</h2>
+            <div class="product-grid">
+                <div class="product-card" onclick="openProductModal('osmosis')">
+                    <div class="product-image">
+                        <img src="filter1.png" alt="Система осмоса"> <div class="product-tag">Top Sale</div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Обратный осмос RO-6</h3>
+                        <p>6 ступеней очистки с минерализатором</p>
+                        <div class="product-footer">
+                            <span class="price">8 500 ₴</span>
+                            <button class="add-to-cart-simple">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" onclick="openProductModal('softener')">
+                    <div class="product-image">
+                        <img src="filter2.png" alt="Умягчитель">
+                    </div>
+                    <div class="product-info">
+                        <h3>Умягчитель Cabinet</h3>
+                        <p>Компактная система для квартиры</p>
+                        <div class="product-footer">
+                            <span class="price">14 200 ₴</span>
+                            <button class="add-to-cart-simple">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" onclick="openProductModal('column')">
+                    <div class="product-image">
+                        <img src="filter3.png" alt="Колонна">
+                    </div>
+                    <div class="product-info">
+                        <h3>Колонна 1054</h3>
+                        <p>Комплексная очистка для дома</p>
+                        <div class="product-footer">
+                            <span class="price">21 000 ₴</span>
+                            <button class="add-to-cart-simple">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" onclick="openProductModal('softener')">
+                    <div class="product-image">
+                        <img src="filter2.png" alt="Умягчитель">
+                    </div>
+                    <div class="product-info">
+                        <h3>Умягчитель Cabinet</h3>
+                        <p>Компактная система для квартиры</p>
+                        <div class="product-footer">
+                            <span class="price">14 200 ₴</span>
+                            <button class="add-to-cart-simple">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="product-modal-overlay">
+        <div class="modal-content product-detail">
+            <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            <div id="product-detail-content">
+                </div>
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+
+</body>
+</html>
