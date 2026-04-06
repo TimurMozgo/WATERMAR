@@ -652,17 +652,20 @@ body {
 }
 
 .product-image {
-    height: 180px;
+    height: auto; 
     background: #1a1d29;
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: block; 
+    width: 100%;
+    border-radius: 20px 20px 0 0; 
+    overflow: hidden;
 }
 
 .product-image img {
-    max-height: 80%;
-    object-fit: contain;
+    width: 100%; 
+    max-height: none; 
+    display: block;
+    object-fit: cover; 
 }
 
 .product-tag {
