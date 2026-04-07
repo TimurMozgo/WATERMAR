@@ -37,6 +37,7 @@
             <button class="modal-close" onclick="closeCart()">&times;</button>
             <div class="modal-body">
                 <h2 class="modal-title">Ваша корзина</h2>
+                
                 <div id="cart-items-list" class="cart-items-list">
                     <p style="color: #666; text-align: center; padding: 20px;">Корзина пока пуста...</p>
                 </div>
@@ -46,7 +47,7 @@
                         <span>Итого:</span>
                         <span id="total-price-sum">0 ₴</span>
                     </div>
-                    <button class="btn btn-primary" onclick="checkoutCart()" style="width: 100%; margin-top: 15px;">
+                    <button class="btn btn-primary btn-checkout" onclick="checkoutCart()" style="width: 100%; margin-top: 15px;">
                         Оформить заказ
                     </button>
                 </div>
@@ -232,23 +233,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="product-card" onclick="openProductModal('softener')">
-                    <div class="product-image">
-                        <img src="./img/yupp-generated-image-111620.png" alt="Умягчитель">
-                    </div>
-                    <div class="product-info">
-                        <h3>Умягчитель Cabinet</h3>
-                        <p>Компактная система для квартиры</p>
-                        <div class="product-footer">
-                            <span class="price">14 200 ₴</span>
-                            <button class="add-to-cart-simple">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </section>

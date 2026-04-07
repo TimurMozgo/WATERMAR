@@ -2,9 +2,24 @@
 const WEBHOOK_URL = 'https://tiktiok.xyz/webhook/708aaac4-0733-4a46-ad0c-f919e3c08698';
 
 const productsData = {
-    'osmosis': { title: 'Обратный осмос RO-6', price: '8 500 ₴', desc: 'Профессиональная система очистки. Удаляет 99% примесей.', img: 'filter1.png' },
-    'softener': { title: 'Умягчитель Cabinet', price: '14 200 ₴', desc: 'Идеальное решение для квартир. Защищает от накипи.', img: 'filter2.png' },
-    'column': { title: 'Колонна 1054', price: '21 000 ₴', desc: 'Мощная система для частного дома. Ресурс до 5 лет.', img: 'filter3.png' }
+    'osmosis': { 
+        title: 'Обратный осмос RO-6', 
+        price: '8 500 ₴', 
+        desc: 'Профессиональная система очистки. Удаляет 99% примесей.', 
+        img: 'photo_2026-04-07_00-25-09.jpg' 
+    },
+    'softener': { 
+        title: 'Умягчитель Cabinet', 
+        price: '14 200 ₴', 
+        desc: 'Идеальное решение для квартир. Защищает от накипи.', 
+        img: 'photo_2026-04-07_00-25-12.jpg' 
+    },
+    'column': { 
+        title: 'Колонна 1054', 
+        price: '21 000 ₴', 
+        desc: 'Мощная система для частного дома. Ресурс до 5 лет.', 
+        img: 'photo_2026-04-07_00-25-14.jpg' 
+    }
 };
 
 let cart = []; // Корзина
@@ -110,7 +125,7 @@ function openCart() {
 
 function closeCart() {
     document.getElementById('cart-modal-overlay')?.classList.remove('active');
-    document.body.style.overflow = '';
+    document.body.style.overflow = ''; // ФИКС: Возвращаем скролл
 }
 
 function addToCart(id) {
@@ -132,26 +147,45 @@ function updateCartUI() {
     if (countLabel) countLabel.textContent = cart.length;
     
     if (cart.length === 0) {
-        if (list) list.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Корзина пока пуста...</p>';
+        if (list) list.innerHTML = '<p style="color: #666; text-align: center; padding: 40px 20px;">Корзина пока пуста...</p>';
         if (totalBlock) totalBlock.style.display = 'none';
         return;
     }
     
     if (totalBlock) totalBlock.style.display = 'block';
+    
     if (list) {
         list.innerHTML = '';
         let total = 0;
+        
         cart.forEach((item, index) => {
-            total += parseInt(item.price.replace(/\s/g, '')) || 0;
+            // Убираем лишние пробелы и символы, чтобы посчитать сумму
+            const priceValue = parseInt(item.price.replace(/\s/g, '')) || 0;
+            total += priceValue;
+
+            // Формируем путь к картинке. Если в данных только имя файла, добавляем папку.
+            const imgSrc = item.img.includes('http') ? item.img : `./img/${item.img}`;
+
+            // Генерируем верстку по твоему референсу
             list.innerHTML += `
-                <div class="cart-item" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333;">
-                    <div>
-                        <div style="font-weight: bold; color: #fff;">${item.title}</div>
-                        <div style="color: #46a1df;">${item.price}</div>
+                <div class="cart-item-row">
+                    <div class="cart-item-content">
+                        <div class="cart-item-img-container">
+                            <img src="${imgSrc}" alt="${item.title}">
+                        </div>
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${item.title}</div>
+                            <div class="cart-item-info-line">1 шт. x ${item.price}</div>
+                        </div>
                     </div>
-                    <button onclick="removeFromCart(${index})" style="background: none; border: none; color: #ff4d4d; cursor: pointer;">Удалить</button>
+                    <button class="cart-item-remove" onclick="removeFromCart(${index})">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>`;
         });
+        
         if (totalPriceSum) totalPriceSum.textContent = total.toLocaleString() + ' ₴';
     }
 }
@@ -192,21 +226,40 @@ function openProductModal(id) {
     const product = productsData[id];
     const content = document.getElementById('product-detail-content');
     const overlay = document.getElementById('product-modal-overlay');
+    
+    // Путь к папке img + название из productsData
+    const imagePath = './img/' + product.img; 
+
     if (content && product) {
         content.innerHTML = `
-            <img src="${product.img}" style="width: 100%; border-radius: 15px; margin-bottom: 15px;">
-            <h2>${product.title}</h2>
-            <div style="color: #46a1df; font-size: 20px; font-weight: 800; margin: 10px 0;">${product.price}</div>
-            <p style="color: #888; font-size: 14px;">${product.desc}</p>
-            <button class="btn-submit" style="width: 100%; margin-top: 20px; padding: 15px; border-radius: 12px; background: #46a1df; color: #fff; border: none; font-weight: bold; cursor: pointer;" onclick="addToCart('${id}')">Добавить в корзину</button>
+            <div class="product-detail">
+                <img src="${imagePath}" alt="${product.title}" style="width: 100%; max-height: 280px; object-fit: contain; background: #1a1d29; border-radius: 16px; margin-bottom: 20px; display: block;">
+                <h2 class="modal-title" style="color: #fff; font-size: 24px;">${product.title}</h2>
+                <div style="color: #46a1df; font-size: 20px; font-weight: 800; margin: 10px 0;">${product.price}</div>
+                <p style="color: #888; font-size: 14px;">${product.desc}</p>
+                <button class="btn-submit" style="width: 100%; margin-top: 20px; padding: 15px; border-radius: 12px; background: #46a1df; color: #fff; border: none; font-weight: bold; cursor: pointer;" onclick="addToCart('${id}')">Добавить в корзину</button>
+            </div>
         `;
         overlay?.classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 }
 
 function closeProductModal() {
     document.getElementById('product-modal-overlay')?.classList.remove('active');
+    document.body.style.overflow = ''; // ФИКС: Возвращаем скролл после закрытия товара
 }
+
+// Закрытие по клику на фон (оверлей) для всех модалок
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeModal();
+            closeProductModal();
+            closeCart();
+        }
+    });
+});
 
 // 6. УВЕДОМЛЕНИЯ
 function showSuccessToast(title, desc, isError = false) {
