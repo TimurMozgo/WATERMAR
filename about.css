@@ -1,0 +1,226 @@
+/* Твой оригинальный код + точечные фиксы */
+
+/* Общие стили */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: #0f121a;
+    color: white;
+    overflow-x: hidden; /* Фикс: чтобы ничего не дергалось вправо */
+    width: 100%;
+}
+
+/* Хедер и Логотип */
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(18, 20, 26, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px;
+}
+
+.graphical-logo {
+    display: block;
+    width: 140px;
+    height: 40px;
+    background-image: url('https://i.ibb.co/L5rK5Lw/WaterMar-logo-clear.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    text-indent: -9999px;
+    filter: brightness(0) invert(1);
+    transition: 0.3s;
+}
+
+.graphical-logo:hover {
+    filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(70, 161, 223, 0.6));
+}
+
+.menu-btn {
+    all: unset;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Секция О НАС */
+.about-main {
+    padding: 120px 20px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+    box-sizing: border-box; /* ФИКС: учет отступов */
+}
+
+.about-hero { text-align: center; margin-bottom: 60px; }
+
+.glow-text {
+    font-size: clamp(30px, 5vw, 42px);
+    font-weight: 900;
+    color: #46a1df;
+    text-shadow: 0 0 25px rgba(70, 161, 223, 0.4);
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.glow-p {
+    text-align: center;
+    color: #3f3f3f;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 17px;
+    margin-top: 15px;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 60px;
+    width: 100%; /* ФИКС */
+    box-sizing: border-box; /* ФИКС */
+}
+
+.feature-card {
+    background: #1a1d26;
+    padding: 40px 30px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: 0.3s;
+    text-align: center;
+    box-sizing: border-box; /* ФИКС: карточка не будет шире 100% */
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    border-color: #46a1df;
+    background: rgba(70, 161, 223, 0.05);
+}
+
+.card-icon { font-size: 42px; margin-bottom: 20px; color: #46a1df; }
+
+/* Кнопки контактов */
+.contact-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 30px;
+    background: linear-gradient(135deg, #46a1df, #2b5a9e);
+    color: white;
+    text-decoration: none;
+    border-radius: 18px;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.contact-btn:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(70, 161, 223, 0.4); }
+
+/* Боковое меню */
+.side-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.4s;
+}
+
+.side-menu-overlay.active { opacity: 1; visibility: visible; }
+
+.side-menu-content {
+    position: absolute;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    background: #12141a;
+    padding: 30px 20px; /* ФИКС: отступ для "НАВИГАЦИЯ" */
+    box-sizing: border-box; /* ФИКС */
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.side-menu-overlay.active .side-menu-content { right: 0; }
+
+.side-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.menu-item-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: white;
+    text-decoration: none;
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+.menu-item-link:hover { background: rgba(70, 161, 223, 0.2); color: #46a1df; }
+
+/* МОБИЛКИ */
+/* МОБИЛКИ */
+@media (max-width: 768px) {
+    .features-grid {
+        grid-template-columns: 1fr !important; /* ФИКС: строго в ряд */
+        padding: 0;
+    }
+
+    .feature-card {
+        width: 100%;
+        padding: 30px 20px;
+    }
+
+    .glow-text {
+        /* ИСПРАВЛЕНО: !important перебивает clamp, а 7vw подстраивается под ширину */
+        font-size: 7vw !important; 
+        line-height: 1.2;
+        word-wrap: break-word; /* Позволяет переносить длинные слова, если совсем тесно */
+        letter-spacing: -0.5px; /* Немного сужаем буквы, чтобы влезло */
+        display: block;
+        width: 100%;
+    }
+    
+    .subtitle {
+        font-size: 13px;
+        padding: 0 10px;
+    }
+    
+    /* ФИКС для навигации на малых экранах */
+    .side-menu-content {
+        width: 80%; 
+    }
+}

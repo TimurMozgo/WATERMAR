@@ -1029,3 +1029,159 @@ body {
         max-height: 320px;
     }
 }
+
+
+/* ==========================================================================
+   СЕКЦИЯ ТОВАРОВ (PREMIUM GRID)
+========================================================================== */
+
+.catalog-cta-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.btn-show-all {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 18px 35px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.btn-show-all span {
+    letter-spacing: 0.5px;
+}
+
+.btn-show-all svg {
+    transition: transform 0.3s ease;
+    color: #46a1df; /* Твой фирменный синий */
+}
+
+/* Эффект при наведении */
+.btn-show-all:hover {
+    background: rgba(70, 161, 223, 0.08);
+    border-color: rgba(70, 161, 223, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(70, 161, 223, 0.15);
+}
+
+.btn-show-all:hover svg {
+    transform: translateX(5px);
+}
+
+.btn-show-all:active {
+    transform: scale(0.96);
+}
+
+/* Мобильная адаптация */
+@media (max-width: 767px) {
+    .btn-show-all {
+        width: 100%;
+        justify-content: center;
+        padding: 16px;
+        font-size: 15px;
+    }
+}
+
+/* БУРГЕР */
+
+/* index.css — Стили для навигации на главной */
+
+/* Оверлей (фон при открытом меню) */
+.side-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px); /* Тот самый эффект блюра как в каталоге */
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+}
+
+.side-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Контейнер самого меню */
+.side-menu-content {
+    position: absolute;
+    top: 0;
+    right: -300px; /* Изначально спрятано справа */
+    width: 300px;
+    height: 100%;
+    background: #12141a; /* Темный люкс */
+    padding: 30px 20px;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.side-menu-overlay.active .side-menu-content {
+    right: 0; /* Выезжает при активации */
+}
+
+/* Стили заголовка меню */
+.side-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 15px;
+}
+
+.menu-title {
+    color: #46a1df; /* Твой синий акцент */
+    font-weight: 800;
+    letter-spacing: 1px;
+    font-size: 14px;
+}
+
+.close-side-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+/* Ссылки в меню */
+.side-menu-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.menu-item-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 12px 15px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    transition: all 0.3s ease;
+}
+
+.menu-item-link:hover {
+    background: rgba(70, 161, 223, 0.15);
+    transform: translateX(5px);
+    color: #46a1df;
+}

@@ -284,3 +284,152 @@ function showSuccessToast(title, desc, isError = false) {
         setTimeout(() => toast.classList.remove('active'), 4000);
     }
 }
+
+
+// КАТАЛОГ ТОВАРОВ ФУЛЛ 
+
+// 1. УПРАВЛЕНИЕ СТРАНИЦАМИ
+function openCatalog() {
+    const home = document.getElementById('home-page');
+    const catalog = document.getElementById('full-catalog-page');
+
+    if (home && catalog) {
+        home.style.display = 'none';
+        catalog.style.display = 'block';
+        window.scrollTo(0, 0);
+        filterCatalog('all'); // Сразу грузим все товары
+    }
+
+    if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+    }
+}
+
+function closeCatalog() {
+    const home = document.getElementById('home-page');
+    const catalog = document.getElementById('full-catalog-page');
+
+    if (home && catalog) {
+        catalog.style.display = 'none';
+        home.style.display = 'block';
+        document.body.style.overflow = ''; // На случай, если блокировал скролл
+    }
+}
+
+// 2. УНИВЕРСАЛЬНАЯ ФИЛЬТРАЦИЯ И ОТРИСОВКА
+function filterCatalog(category = 'all') {
+    const grid = document.getElementById('full-catalog-grid');
+    if (!grid) return;
+
+    // 1. Чистим сетку
+    grid.innerHTML = ''; 
+
+    // 2. Обновляем визуальное состояние табов (кнопок)
+    const tabs = document.querySelectorAll('.tab-item');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+        // Проверяем, совпадает ли категория в onclick с текущей
+        if (tab.getAttribute('onclick')?.includes(`'${category}'`)) {
+            tab.classList.add('active');
+        }
+    });
+
+    // 3. Работаем с данными (productsData должен быть доступен глобально)
+    const productsArray = Object.values(productsData);
+    const filtered = category === 'all' 
+        ? productsArray 
+        : productsArray.filter(p => p.category === category);
+
+    // 4. Если пусто
+    if (filtered.length === 0) {
+        grid.innerHTML = '<p style="color: #666; text-align: center; grid-column: 1/-1; padding: 40px;">Товары скоро появятся...</p>';
+        return;
+    }
+
+    // 5. Рендерим карточки (стиль как на твоих скринах)
+    filtered.forEach(product => {
+        grid.innerHTML += `
+            <div class="product-card" onclick="openProductModal(${product.id})">
+                <div class="product-img-wrapper">
+                    <img src="./img/${product.img}" alt="${product.title}" loading="lazy">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">${product.title}</h3>
+                    <div class="product-price-row">
+                        <span class="product-price">${product.price}</span>
+                        <button class="add-quick-btn" onclick="event.stopPropagation(); addToCart(${product.id})">+</button>
+                    </div>
+                </div>
+            </div>`;
+    });
+}
+
+// Пример того, как это должно выглядеть в твоем JS
+function renderFullCatalog(products) {
+    const grid = document.getElementById('full-catalog-grid');
+    if (!grid) return; // Проверка на наличие контейнера
+    
+    grid.innerHTML = ''; // Очищаем сетку перед рендером
+
+    products.forEach(product => {
+        // Проверяем статус: если не Active, пропускаем товар
+        if (product.status !== 'Active') return;
+
+        // Рендерим карточку с твоими полями из n8n
+        grid.innerHTML += `
+            <div class="product-card" data-category="${product.category}"> 
+                <div class="product-img-container">
+                    <img src="${product.photo}" alt="${product.name}" loading="lazy">
+                </div>
+                <div class="product-details">
+                    <span class="category-badge">${product.category}</span>
+                    
+                    <h3 class="product-name">${product.name}</h3>
+                    
+                    <div class="product-footer">
+                        <span class="product-price-value">${product.price} ₴</span>
+                        <button class="buy-btn" onclick="addToCart(${product.id})">+</button>
+                    </div>
+                </div>
+            </div>`;
+    });
+}
+
+// БУРГЕР 
+
+// index.js — Логика меню и корзины для главной
+
+// Открытие бокового меню
+function openSideMenu() {
+    const sideMenu = document.getElementById('side-menu-overlay');
+    if (sideMenu) {
+        sideMenu.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Запрещаем скролл фона
+    }
+}
+
+// Закрытие бокового меню
+function closeSideMenu() {
+    const sideMenu = document.getElementById('side-menu-overlay');
+    if (sideMenu) {
+        sideMenu.classList.remove('active');
+        document.body.style.overflow = ''; // Возвращаем скролл
+    }
+}
+
+// Логика корзины (если она нужна на главной)
+function openCart() {
+    const cartModal = document.getElementById('cart-modal-overlay');
+    if (cartModal) {
+        cartModal.classList.add('active'); // Предполагаем, что в style.css есть .active для модалки
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeCart() {
+    const cartModal = document.getElementById('cart-modal-overlay');
+    if (cartModal) {
+        cartModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}

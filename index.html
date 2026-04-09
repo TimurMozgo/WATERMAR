@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WATERMAR — Очистка воды</title>
     <link rel="stylesheet" href="./style.css">
 </head>
@@ -10,7 +10,7 @@
     
     <header class="header">
         <div class="header-container">
-            <div class="logo-wrapper" id="main-logo">
+            <div class="logo-wrapper" id="main-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
                 <span class="logo-text-w">WATER</span><span class="logo-text-m">MAR</span>
             </div>
             
@@ -23,7 +23,7 @@
                     <span class="cart-badge" id="cart-count">0</span>
                 </button>
                 
-                <button class="icon-btn" id="menu-btn">
+                <button class="icon-btn" id="menu-btn" onclick="openSideMenu()">
                     <svg class="icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
@@ -32,8 +32,27 @@
         </div>
     </header>
 
-    <div class="modal-overlay" id="cart-modal-overlay">
-        <div class="modal-content">
+    <div id="side-menu-overlay" class="side-menu-overlay" onclick="closeSideMenu()">
+        <div class="side-menu-content" onclick="event.stopPropagation()">
+            <div class="side-menu-header">
+                <span class="menu-title">НАВИГАЦИЯ</span>
+                <button class="close-side-btn" onclick="closeSideMenu()">&times;</button>
+            </div>
+            <div class="side-menu-body">
+                <a href="catalog.html" class="menu-item-link">
+                    <div class="menu-item-icon">📦</div>
+                    <span>Каталог</span>
+                </a>
+                <a href="about.html" class="menu-item-link">
+                    <div class="menu-item-icon">ℹ️</div>
+                    <span>О нас</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="cart-modal-overlay" onclick="closeCart()">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeCart()">&times;</button>
             <div class="modal-body">
                 <h2 class="modal-title">Ваша корзина</h2>
@@ -244,6 +263,18 @@
                 </div>
         </div>
     </div>
+
+<!-- КАТАЛОГ НАЧАЛО ФУЛЛ -->
+
+    <div class="catalog-cta-container">
+        <a href="catalog.html" class="btn-show-all" style="text-decoration: none;">
+            <span>Смотреть весь каталог</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </a>
+    </div>    
 
     <script src="./script.js"></script>
 
