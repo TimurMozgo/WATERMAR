@@ -1,4 +1,4 @@
-/* Твой оригинальный код + точечные фиксы */
+/* Полный код CSS с исправлениями фона и размеров */
 
 /* Общие стили */
 body {
@@ -16,7 +16,7 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(18, 20, 26, 0.8);
+    background: rgba(18, 20, 26, 0.95); /* Увеличил плотность фона для маскировки краев лого */
     backdrop-filter: blur(10px);
     z-index: 1000;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -26,26 +26,41 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 10px 20px;
+    padding: 5px 20px;
 }
 
-.graphical-logo {
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  user-select: none;
+}
+
+/* Стили для самой картинки логотипа */
+.logo-img {
+    /* ИСПОЛЬЗУЙ !important, чтобы перебить любые другие настройки */
+    height: 40px !important; 
+    width: auto !important;
     display: block;
-    width: 140px;
-    height: 40px;
-    background-image: url('https://i.ibb.co/L5rK5Lw/WaterMar-logo-clear.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    text-indent: -9999px;
-    filter: brightness(0) invert(1);
-    transition: 0.3s;
+    
+    /* Твои настройки прозрачности */
+    mix-blend-mode: screen; 
+    filter: brightness(1.2); 
+    
+    /* Убираем лишние трансформации, если они мешают */
+    transform: none !important; 
 }
 
-.graphical-logo:hover {
-    filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(70, 161, 223, 0.6));
+.logo-wrapper:active {
+  transform: scale(0.96); 
+}
+
+.logo-wrapper:hover .logo-img {
+    transform: scale(1.05);
+    filter: brightness(1.3) contrast(1.5) drop-shadow(0 0 10px rgba(70, 161, 223, 0.4));
 }
 
 .menu-btn {
@@ -59,6 +74,11 @@ body {
     align-items: center;
     cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.3s;
+}
+
+.menu-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Секция О НАС */
@@ -69,7 +89,26 @@ body {
     box-sizing: border-box; /* ФИКС: учет отступов */
 }
 
-.about-hero { text-align: center; margin-bottom: 60px; }
+.about-hero { 
+    text-align: center; 
+    margin-bottom: 60px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Логотип в центре страницы (Hero) */
+.hero-logo-img {
+    height: 50px; /* Делаем БОЛЬШЕ, как ты хотел */
+    width: auto;
+    display: block;
+    
+    /* МАГИЯ ВЫРЕЗАНИЯ ФОНА */
+    mix-blend-mode: screen; /* Этот режим делает черный цвет прозрачным. Изи! */
+    
+    filter: brightness(1.2); /* Немного добавим сочности */
+    transition: transform 0.2s ease;
+}
 
 .glow-text {
     font-size: clamp(30px, 5vw, 42px);
@@ -96,8 +135,8 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 25px;
     margin-bottom: 60px;
-    width: 100%; /* ФИКС */
-    box-sizing: border-box; /* ФИКС */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .feature-card {
@@ -107,7 +146,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: 0.3s;
     text-align: center;
-    box-sizing: border-box; /* ФИКС: карточка не будет шире 100% */
+    box-sizing: border-box;
 }
 
 .feature-card:hover {
@@ -162,8 +201,8 @@ body {
     width: 300px;
     height: 100%;
     background: #12141a;
-    padding: 30px 20px; /* ФИКС: отступ для "НАВИГАЦИЯ" */
-    box-sizing: border-box; /* ФИКС */
+    padding: 30px 20px;
+    box-sizing: border-box;
     transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -192,10 +231,13 @@ body {
 .menu-item-link:hover { background: rgba(70, 161, 223, 0.2); color: #46a1df; }
 
 /* МОБИЛКИ */
-/* МОБИЛКИ */
 @media (max-width: 768px) {
+    .about-main {
+        padding: 100px 15px 40px; /* Уменьшил отступ сверху на мобиле */
+    }
+
     .features-grid {
-        grid-template-columns: 1fr !important; /* ФИКС: строго в ряд */
+        grid-template-columns: 1fr !important;
         padding: 0;
     }
 
@@ -205,11 +247,10 @@ body {
     }
 
     .glow-text {
-        /* ИСПРАВЛЕНО: !important перебивает clamp, а 7vw подстраивается под ширину */
         font-size: 7vw !important; 
         line-height: 1.2;
-        word-wrap: break-word; /* Позволяет переносить длинные слова, если совсем тесно */
-        letter-spacing: -0.5px; /* Немного сужаем буквы, чтобы влезло */
+        word-wrap: break-word; 
+        letter-spacing: -0.5px; 
         display: block;
         width: 100%;
     }
@@ -219,8 +260,11 @@ body {
         padding: 0 10px;
     }
     
-    /* ФИКС для навигации на малых экранах */
     .side-menu-content {
         width: 80%; 
+    }
+
+    .logo-img {
+        height: 28px; /* Чуть меньше для мобильных устройств */
     }
 }

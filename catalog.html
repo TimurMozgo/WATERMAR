@@ -11,7 +11,9 @@
 
     <header class="header">
         <div class="header-content">
-            <div class="logo">WATER<span>MAR</span></div>
+            <div class="logo-wrapper" id="main-logo" onclick="window.location.href='index.html'">
+                <img src="./img/watermar logo.jpg" alt="Aqua Service" class="logo-img">
+            </div>
             
             <div class="header-right">
                 <div class="cart-icon" onclick="openCart()">
@@ -44,6 +46,23 @@
                     <div class="menu-item-icon">ℹ️</div>
                     <span>О нас</span>
                 </a>
+                <a href="#" class="menu-item-link" onclick="showOrders()">
+                    <span>📋</span> Мои заказы
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="orders-overlay" class="side-menu-overlay" onclick="closeOrders()">
+        <div class="side-menu-content" onclick="event.stopPropagation()">
+            <div class="side-menu-header">
+                <span class="menu-title">ИСТОРИЯ ЗАКАЗОВ</span>
+                <button class="close-side-btn" onclick="closeOrders()">&times;</button>
+            </div>
+            <div id="orders-list" class="side-menu-body">
+                <div class="order-empty-message" style="text-align: center; color: rgba(255,255,255,0.4); margin-top: 50px;">
+                    История заказов пуста
+                </div>
             </div>
         </div>
     </div>

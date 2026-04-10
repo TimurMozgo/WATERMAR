@@ -1,24 +1,26 @@
+// ==========================================
 // 1. НАСТРОЙКИ И ДАННЫЕ
+// ==========================================
 const WEBHOOK_URL = 'https://tiktiok.xyz/webhook/708aaac4-0733-4a46-ad0c-f919e3c08698';
 
 const productsData = {
     'osmosis': { 
-        title: 'Обратный осмос RO-6', 
-        price: '8 500 ₴', 
-        desc: 'Профессиональная система очистки. Удаляет 99% примесей.', 
-        img: 'photo_2026-04-07_00-25-09.jpg' 
+        title: 'Watermar 5-50', 
+        price: '180$ + 25$(1000 монтаж)', 
+        desc: 'Без минерализатора, кран капля, бак 12 л', 
+        img: '1.png' 
     },
     'softener': { 
-        title: 'Умягчитель Cabinet', 
-        price: '14 200 ₴', 
-        desc: 'Идеальное решение для квартир. Защищает от накипи.', 
-        img: 'photo_2026-04-07_00-25-12.jpg' 
+        title: 'Watermar 6-50 P', 
+        price: '260$ + 30$ (1500 грн. монтаж) ', 
+        desc: 'С насосом, минерализатором и рН корректором . Кран модерн', 
+        img: '2.png' 
     },
     'column': { 
-        title: 'Колонна 1054', 
-        price: '21 000 ₴', 
-        desc: 'Мощная система для частного дома. Ресурс до 5 лет.', 
-        img: 'photo_2026-04-07_00-25-14.jpg' 
+        title: 'Watermar 6-50 PpH "La Perla"', 
+        price: '260$+ 50$ (рН)+ 35$ (1700 грн. монтаж) ', 
+        desc: 'С насосом, минерализатором и рН корректором . Кран модерн', 
+        img: '3.png' 
     }
 };
 
@@ -46,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const submitBtn = orderForm.querySelector('.btn-submit');
         const originalBtnText = submitBtn.innerHTML;
 
-        // Сбор данных из корзины
         let totalSum = 0;
         const productsList = cart.map((item, index) => {
             const priceNum = parseInt(item.price.replace(/\s/g, '')) || 0;
@@ -54,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return `${index + 1}. ${item.title}`;
         }).join('\n');
 
-        // Словарь категорий для четкого понимания в n8n
         const serviceMapping = {
             'master': 'Вызвать мастера на объект',
             'analysis': 'Записаться на анализ воды',
@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
             name: document.getElementById('user-name').value,
             phone: document.getElementById('user-phone').value,
             service: finalServiceName,
-            // Если корзина пуста, в поле "Товары" пишем название самой услуги
             products: productsList.trim() !== "" ? productsList : finalServiceName,
             totalPrice: totalSum > 0 ? totalSum.toLocaleString() + ' ₴' : '—',
             date: new Date().toLocaleString()
@@ -86,6 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
+                // --- ЛОГИКА АУДИТОРА: СОХРАНЕНИЕ В ИСТОРИЮ (БЕЗ НОМЕРОВ) ---
+                const newOrder = {
+                    date: new Date().toLocaleDateString('uk-UA'),
+                    item: formData.products.replace(/\d+\.\s/g, '').replace(/\n/g, ', '), 
+                    price: formData.totalPrice
+                };
+
+                const history = JSON.parse(localStorage.getItem('user_orders') || '[]');
+                history.unshift(newOrder);
+                localStorage.setItem('user_orders', JSON.stringify(history));
+                // ---------------------------------------------------------
+
                 cart = [];
                 updateCartUI();
                 closeModal();
@@ -106,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Анимации появления элементов
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) entry.target.classList.add('active');
@@ -125,7 +135,7 @@ function openCart() {
 
 function closeCart() {
     document.getElementById('cart-modal-overlay')?.classList.remove('active');
-    document.body.style.overflow = ''; // ФИКС: Возвращаем скролл
+    document.body.style.overflow = '';
 }
 
 function addToCart(id) {
@@ -145,7 +155,6 @@ function updateCartUI() {
     const totalPriceSum = document.getElementById('total-price-sum');
     
     if (countLabel) countLabel.textContent = cart.length;
-    
     if (cart.length === 0) {
         if (list) list.innerHTML = '<p style="color: #666; text-align: center; padding: 40px 20px;">Корзина пока пуста...</p>';
         if (totalBlock) totalBlock.style.display = 'none';
@@ -157,35 +166,23 @@ function updateCartUI() {
     if (list) {
         list.innerHTML = '';
         let total = 0;
-        
         cart.forEach((item, index) => {
-            // Убираем лишние пробелы и символы, чтобы посчитать сумму
             const priceValue = parseInt(item.price.replace(/\s/g, '')) || 0;
             total += priceValue;
-
-            // Формируем путь к картинке. Если в данных только имя файла, добавляем папку.
             const imgSrc = item.img.includes('http') ? item.img : `./img/${item.img}`;
 
-            // Генерируем верстку по твоему референсу
             list.innerHTML += `
                 <div class="cart-item-row">
                     <div class="cart-item-content">
-                        <div class="cart-item-img-container">
-                            <img src="${imgSrc}" alt="${item.title}">
-                        </div>
+                        <div class="cart-item-img-container"><img src="${imgSrc}" alt="${item.title}"></div>
                         <div class="cart-item-details">
                             <div class="cart-item-title">${item.title}</div>
                             <div class="cart-item-info-line">1 шт. x ${item.price}</div>
                         </div>
                     </div>
-                    <button class="cart-item-remove" onclick="removeFromCart(${index})">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
-                        </svg>
-                    </button>
+                    <button class="cart-item-remove" onclick="removeFromCart(${index})">&times;</button>
                 </div>`;
         });
-        
         if (totalPriceSum) totalPriceSum.textContent = total.toLocaleString() + ' ₴';
     }
 }
@@ -204,12 +201,7 @@ function checkoutCart() {
 function openModal(type) {
     const overlay = document.getElementById('modal-overlay');
     const title = document.getElementById('modal-title');
-    const serviceNames = { 
-        'master': 'Вызов мастера', 
-        'analysis': 'Анализ воды', 
-        'call': 'Заказать звонок', 
-        'cart_checkout': 'Оформление заказа' 
-    };
+    const serviceNames = { 'master': 'Вызов мастера', 'analysis': 'Анализ воды', 'call': 'Заказать звонок', 'cart_checkout': 'Оформление заказа' };
     
     if (title) title.textContent = serviceNames[type] || 'Заявка';
     document.getElementById('order-form').dataset.service = type;
@@ -222,44 +214,58 @@ function closeModal() {
     document.body.style.overflow = '';
 }
 
-function openProductModal(id) {
-    const product = productsData[id];
-    const content = document.getElementById('product-detail-content');
-    const overlay = document.getElementById('product-modal-overlay');
-    
-    // Путь к папке img + название из productsData
-    const imagePath = './img/' + product.img; 
 
-    if (content && product) {
-        content.innerHTML = `
-            <div class="product-detail">
-                <img src="${imagePath}" alt="${product.title}" style="width: 100%; max-height: 280px; object-fit: contain; background: #1a1d29; border-radius: 16px; margin-bottom: 20px; display: block;">
-                <h2 class="modal-title" style="color: #fff; font-size: 24px;">${product.title}</h2>
-                <div style="color: #46a1df; font-size: 20px; font-weight: 800; margin: 10px 0;">${product.price}</div>
-                <p style="color: #888; font-size: 14px;">${product.desc}</p>
-                <button class="btn-submit" style="width: 100%; margin-top: 20px; padding: 15px; border-radius: 12px; background: #46a1df; color: #fff; border: none; font-weight: bold; cursor: pointer;" onclick="addToCart('${id}')">Добавить в корзину</button>
-            </div>
-        `;
-        overlay?.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-}
 
 function closeProductModal() {
     document.getElementById('product-modal-overlay')?.classList.remove('active');
-    document.body.style.overflow = ''; // ФИКС: Возвращаем скролл после закрытия товара
+    document.body.style.overflow = '';
 }
 
-// Закрытие по клику на фон (оверлей) для всех модалок
+// Закрытие по клику на фон
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
             closeModal();
             closeProductModal();
             closeCart();
+            closeOrders(); 
         }
     });
 });
+
+function openProductModal(id) {
+    const product = productsData[id];
+    const content = document.getElementById('product-detail-content');
+    const overlay = document.getElementById('product-modal-overlay');
+
+    if (content && product) {
+        const imagePath = `./img/${product.img}`; 
+        
+        // ВКЛЮЧАЕМ режим "картинка в край"
+        content.classList.add('product-mode');
+
+        content.innerHTML = `
+            <div class="modal-image-container">
+                <img src="${imagePath}" alt="${product.title}" class="modal-top-img">
+            </div>
+            
+            <div class="modal-text-section">
+                <h2 class="modal-title">${product.title}</h2>
+                <div class="price-large">${product.price}</div>
+                <p class="modal-subtitle">${product.desc}</p>
+                
+                <button class="btn-add-cart" style="width: 100%; margin: 0;" onclick="addToCart('${id}')">
+                    Добавить в корзину
+                </button>
+            </div>`;
+        
+        overlay?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// ВАЖНО: Добавь эту строку в начало функций открытия КОРЗИНЫ и ЗАКАЗА
+// content.classList.remove('product-mode'); // Это вернет отступы
 
 // 6. УВЕДОМЛЕНИЯ
 function showSuccessToast(title, desc, isError = false) {
@@ -271,165 +277,118 @@ function showSuccessToast(title, desc, isError = false) {
     if (toast && tTitle && tDesc && tIcon) {
         tTitle.textContent = title;
         tDesc.textContent = desc;
-        
-        if (isError) {
-            toast.classList.add('error');
-            tIcon.textContent = ''; 
-        } else {
-            toast.classList.remove('error');
-            tIcon.textContent = '✓'; 
-        }
-        
+        isError ? toast.classList.add('error') : toast.classList.remove('error');
+        tIcon.textContent = isError ? '✕' : '✓';
         toast.classList.add('active');
         setTimeout(() => toast.classList.remove('active'), 4000);
     }
 }
 
-
-// КАТАЛОГ ТОВАРОВ ФУЛЛ 
-
-// 1. УПРАВЛЕНИЕ СТРАНИЦАМИ
+// 7. КАТАЛОГ ТОВАРОВ ФУЛЛ 
 function openCatalog() {
     const home = document.getElementById('home-page');
     const catalog = document.getElementById('full-catalog-page');
-
     if (home && catalog) {
         home.style.display = 'none';
         catalog.style.display = 'block';
         window.scrollTo(0, 0);
-        filterCatalog('all'); // Сразу грузим все товары
-    }
-
-    if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+        filterCatalog('all');
     }
 }
 
 function closeCatalog() {
     const home = document.getElementById('home-page');
     const catalog = document.getElementById('full-catalog-page');
-
     if (home && catalog) {
         catalog.style.display = 'none';
         home.style.display = 'block';
-        document.body.style.overflow = ''; // На случай, если блокировал скролл
+        document.body.style.overflow = '';
     }
 }
 
-// 2. УНИВЕРСАЛЬНАЯ ФИЛЬТРАЦИЯ И ОТРИСОВКА
 function filterCatalog(category = 'all') {
     const grid = document.getElementById('full-catalog-grid');
     if (!grid) return;
-
-    // 1. Чистим сетку
     grid.innerHTML = ''; 
-
-    // 2. Обновляем визуальное состояние табов (кнопок)
-    const tabs = document.querySelectorAll('.tab-item');
-    tabs.forEach(tab => {
-        tab.classList.remove('active');
-        // Проверяем, совпадает ли категория в onclick с текущей
-        if (tab.getAttribute('onclick')?.includes(`'${category}'`)) {
-            tab.classList.add('active');
-        }
-    });
-
-    // 3. Работаем с данными (productsData должен быть доступен глобально)
     const productsArray = Object.values(productsData);
-    const filtered = category === 'all' 
-        ? productsArray 
-        : productsArray.filter(p => p.category === category);
+    const filtered = category === 'all' ? productsArray : productsArray.filter(p => p.category === category);
 
-    // 4. Если пусто
     if (filtered.length === 0) {
         grid.innerHTML = '<p style="color: #666; text-align: center; grid-column: 1/-1; padding: 40px;">Товары скоро появятся...</p>';
         return;
     }
 
-    // 5. Рендерим карточки (стиль как на твоих скринах)
     filtered.forEach(product => {
+        const id = Object.keys(productsData).find(key => productsData[key] === product);
         grid.innerHTML += `
-            <div class="product-card" onclick="openProductModal(${product.id})">
-                <div class="product-img-wrapper">
-                    <img src="./img/${product.img}" alt="${product.title}" loading="lazy">
-                </div>
+            <div class="product-card" onclick="openProductModal('${id}')">
+                <div class="product-img-wrapper"><img src="./img/${product.img}" alt="${product.title}" loading="lazy"></div>
                 <div class="product-info">
                     <h3 class="product-title">${product.title}</h3>
                     <div class="product-price-row">
                         <span class="product-price">${product.price}</span>
-                        <button class="add-quick-btn" onclick="event.stopPropagation(); addToCart(${product.id})">+</button>
+                        <button class="add-quick-btn" onclick="event.stopPropagation(); addToCart('${id}')">+</button>
                     </div>
                 </div>
             </div>`;
     });
 }
 
-// Пример того, как это должно выглядеть в твоем JS
-function renderFullCatalog(products) {
-    const grid = document.getElementById('full-catalog-grid');
-    if (!grid) return; // Проверка на наличие контейнера
-    
-    grid.innerHTML = ''; // Очищаем сетку перед рендером
-
-    products.forEach(product => {
-        // Проверяем статус: если не Active, пропускаем товар
-        if (product.status !== 'Active') return;
-
-        // Рендерим карточку с твоими полями из n8n
-        grid.innerHTML += `
-            <div class="product-card" data-category="${product.category}"> 
-                <div class="product-img-container">
-                    <img src="${product.photo}" alt="${product.name}" loading="lazy">
-                </div>
-                <div class="product-details">
-                    <span class="category-badge">${product.category}</span>
-                    
-                    <h3 class="product-name">${product.name}</h3>
-                    
-                    <div class="product-footer">
-                        <span class="product-price-value">${product.price} ₴</span>
-                        <button class="buy-btn" onclick="addToCart(${product.id})">+</button>
-                    </div>
-                </div>
-            </div>`;
-    });
-}
-
-// БУРГЕР 
-
-// index.js — Логика меню и корзины для главной
-
-// Открытие бокового меню
+// 8. БУРГЕР И ИСТОРИЯ ЗАКАЗОВ (АУДИТОР)
 function openSideMenu() {
     const sideMenu = document.getElementById('side-menu-overlay');
     if (sideMenu) {
         sideMenu.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Запрещаем скролл фона
-    }
-}
-
-// Закрытие бокового меню
-function closeSideMenu() {
-    const sideMenu = document.getElementById('side-menu-overlay');
-    if (sideMenu) {
-        sideMenu.classList.remove('active');
-        document.body.style.overflow = ''; // Возвращаем скролл
-    }
-}
-
-// Логика корзины (если она нужна на главной)
-function openCart() {
-    const cartModal = document.getElementById('cart-modal-overlay');
-    if (cartModal) {
-        cartModal.classList.add('active'); // Предполагаем, что в style.css есть .active для модалки
         document.body.style.overflow = 'hidden';
     }
 }
 
-function closeCart() {
-    const cartModal = document.getElementById('cart-modal-overlay');
-    if (cartModal) {
-        cartModal.classList.remove('active');
+function closeSideMenu() {
+    const sideMenu = document.getElementById('side-menu-overlay');
+    if (sideMenu) {
+        sideMenu.classList.remove('active');
         document.body.style.overflow = '';
+    }
+}
+
+function showOrders() {
+    closeSideMenu(); 
+    const ordersOverlay = document.getElementById('orders-overlay');
+    if (ordersOverlay) {
+        ordersOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        renderOrdersList(); 
+    }
+}
+
+function closeOrders() {
+    const ordersOverlay = document.getElementById('orders-overlay');
+    if (ordersOverlay) {
+        ordersOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function renderOrdersList() {
+    const list = document.getElementById('orders-list');
+    if (!list) return;
+
+    // Читаем реальные данные из памяти
+    const savedOrders = JSON.parse(localStorage.getItem('user_orders') || '[]');
+
+    if (savedOrders.length > 0) {
+        list.innerHTML = savedOrders.map(order => `
+            <div class="order-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 15px; padding: 18px; margin-bottom: 12px;">
+                <div style="text-align: right; font-size: 11px; color: #46a1df; margin-bottom: 8px; font-weight: 800;">
+                    ${order.date}
+                </div>
+                <div style="font-size: 14px; color: white; line-height: 1.4;">
+                    ${order.item}
+                    <div style="margin-top: 10px; font-size: 18px; font-weight: 800; color: #fff;">${order.price}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        list.innerHTML = '<p style="text-align:center; color:rgba(255,255,255,0.3); margin-top:40px;">История пуста</p>';
     }
 }

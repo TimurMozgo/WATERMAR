@@ -51,29 +51,32 @@ body {
   padding: 0 16px;
 }
 
-/* Стилизация Логотипа */
+
+
 .logo-wrapper {
-  font-weight: 800;
-  font-size: 20px;
-  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
   cursor: pointer;
   transition: transform 0.15s ease;
   user-select: none;
 }
 
+
+.logo-img {
+  height: 40px; 
+  width: auto;
+  display: block;
+  
+  mix-blend-mode: screen; 
+  
+  filter: brightness(1.2); 
+  transition: transform 0.2s ease;
+}
+
 .logo-wrapper:active {
-  transform: scale(0.96); /* Эффект нажатия */
+  transform: scale(0.96); 
 }
 
-.logo-text-w {
-  color: var(--text-w);
-}
-
-.logo-text-m {
-  color: var(--text-m);
-}
-
-/* Стилизация Кнопок Действий */
 .header-actions {
   display: flex;
   gap: 12px;
@@ -90,7 +93,7 @@ body {
   align-items: center;
   position: relative;
   cursor: pointer;
-  color: var(--text-color); /* Для SVG */
+  color: var(--text-color); 
   transition: background 0.2s ease, transform 0.15s ease;
 }
 
@@ -99,7 +102,7 @@ body {
 }
 
 .icon-btn:active {
-  transform: scale(0.95); /* Эффект нажатия */
+  transform: scale(0.95);
 }
 
 .icon-svg {
@@ -282,6 +285,8 @@ body {
    ОБНОВЛЕННАЯ МОДАЛКА (MODAL SYSTEM) - ВСЁ ПО ЦЕНТРУ
    ========================================================================== */
 
+/* Фоновая подложка */
+/* 1. ФОНОВАЯ ПОДЛОЖКА (OVERLAY) */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -289,7 +294,7 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(12px); /* Чуть больше блюра для премиальности */
+    backdrop-filter: blur(12px);
     z-index: 1000;
     padding: 20px;
     display: none; 
@@ -302,45 +307,54 @@ body {
 .modal-overlay.active {
     display: flex;
     opacity: 1;
-    pointer-events: auto;
 }
 
+/* 2. ОСНОВНОЙ КОНТЕЙНЕР МОДАЛКИ (БАЗОВЫЙ) */
 .modal-content {
-    background: #1a1d29; /* Твой фирменный темный */
+    background: #1a1d29;
     width: 100%;
     max-width: 480px; 
     border-radius: 28px;
+    overflow: hidden; 
     position: relative;
+    /* Паддинги для корзины и заказа, чтобы текст не лип к краям */
+    padding: 32px !important; 
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-    overflow: hidden;
-    transform: scale(0.9);
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     display: flex;
     flex-direction: column;
-    align-items: center; /* Центрируем всё содержимое */
+    transition: all 0.3s ease;
 }
 
-.modal-overlay.active .modal-content {
-    transform: scale(1);
+/* 3. РЕЖИМ ТОВАРА (Включается через JS: classList.add('product-mode')) */
+.modal-content.product-mode {
+    padding: 0 !important; /* Убирает паддинги для картинки "в край" */
 }
 
-/* КАРТИНКА - В КРАЙ И С ЦЕНТРИРОВАНИЕМ */
-.product-detail img {
-    width: 100% !important;
-    height: 280px !important;
-    object-fit: cover !important;
-    display: block !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* ТЕКСТОВЫЙ БЛОК */
-.modal-body, .product-detail {
-    padding: 30px 32px 40px 32px;
+/* 4. БЛОК КАРТИНКИ (ТОЛЬКО ДЛЯ ТОВАРА) */
+.modal-image-container {
     width: 100%;
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+    font-size: 0;
+}
+
+.modal-top-img {
+    width: 100% !important;
+    height: auto;
+    max-height: 380px;
+    object-fit: cover; 
+    display: block;
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+}
+
+/* 5. ТЕКСТОВЫЙ БЛОК ТОВАРА */
+.modal-text-section {
+    padding: 30px 32px 40px 32px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Центрируем заголовки и описание */
+    align-items: center;
     text-align: center;
 }
 
@@ -357,25 +371,26 @@ body {
     font-size: 15px;
     line-height: 1.5;
     margin-bottom: 24px;
-    max-width: 90%; /* Чтобы текст не расплывался слишком широко */
+    max-width: 95%;
 }
 
-/* ЦЕНА - ЖИРНО И ПО ЦЕНТРУ */
 .price-large {
-    color: #46a1df; /* Твой акцентный синий */
+    color: #46a1df;
     font-size: 28px;
     font-weight: 900;
     margin-bottom: 25px;
     display: block;
+    text-align: center;
 }
 
-/* ФОРМА ВВОДА */
+/* 6. ФОРМА ЗАКАЗА (ДЛЯ ОКНА ЗАЯВКИ) */
 .modal-form {
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 0 32px 32px 32px; /* Отступы для полей */
+    /* Убрали лишний паддинг сверху, так как он есть у родителя */
+    padding: 0 0 8px 0; 
 }
 
 .form-group input {
@@ -386,7 +401,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #fff;
     font-size: 16px;
-    text-align: center; /* Текст внутри инпутов тоже по центру */
+    text-align: center;
     transition: all 0.2s ease;
 }
 
@@ -394,9 +409,10 @@ body {
     border-color: #46a1df;
     background: rgba(255, 255, 255, 0.06);
     box-shadow: 0 0 0 4px rgba(70, 161, 223, 0.15);
+    outline: none;
 }
 
-/* КНОПКА ОТПРАВИТЬ С ГРАДИЕНТОМ */
+/* 7. КНОПКА ОТПРАВКИ С ГРАДИЕНТОМ */
 .btn-submit {
     width: 100%;
     border: none;
@@ -406,7 +422,7 @@ body {
     font-weight: 800;
     color: white;
     cursor: pointer;
-    background: linear-gradient(135deg, #8e2de2, #46a1df); /* */
+    background: linear-gradient(135deg, #8e2de2, #46a1df);
     box-shadow: 0 10px 25px rgba(142, 45, 226, 0.25);
     display: flex;
     align-items: center;
@@ -424,49 +440,30 @@ body {
     transform: scale(0.96);
 }
 
-/* КНОПКА ЗАКРЫТЬ (Крестик) */
-.modal-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 32px;
-    height: 32px;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-
-.btn-submit:active { transform: scale(0.97); }
-
-/* КНОПКА ЗАКРЫТИЯ */
+/* 8. КНОПКА ЗАКРЫТИЯ (КРЕСТИК) */
 .modal-close {
     position: absolute;
     top: 15px;
     right: 15px;
+    width: 36px;
+    height: 36px;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #fff;
-    z-index: 10;
-    width: 36px;
-    height: 36px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    z-index: 10;
     transition: 0.2s;
+    font-size: 20px;
 }
 
-.modal-close:hover { background: rgba(255, 255, 255, 0.2); }
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
 
 /* ==========================================================================
    АДАПТИВНОСТЬ ДЛЯ МОБИЛОК (max-width: 767px)
@@ -902,20 +899,6 @@ body {
     transform: scale(1.05);
 }
 
-/* Тег товара (Top Sale и т.д.) */
-.product-tag {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: linear-gradient(135deg, #8e2de2, #46a1df); /* Твой градиент */
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    z-index: 2;
-    color: #fff;
-}
-
 /* Контентная часть */
 .product-info {
     padding: 24px;
@@ -1002,6 +985,26 @@ body {
 
 .btn-add-cart i, .btn-add-cart span {
     pointer-events: none;
+}
+
+/* Адаптив для мобильных устройств ЛОГОТИП */
+@media (max-width: 768px) {
+  .logo-img {
+    /* На мобилке делаем чуть компактнее */
+    height: 38px; /* Оптимально: не мелко, но и не громоздко */
+    
+    /* Сохраняем магию вырезания фона */
+    mix-blend-mode: screen; 
+    
+    /* Если логотип прилипает к краю, можно добавить отступ */
+    margin-left: 5px; 
+  }
+
+  .logo-wrapper {
+    /* Центрируем четко по высоте хедера на мобилке */
+    display: flex;
+    align-items: center;
+  }
 }
 
 @media (max-width: 767px) {
@@ -1097,18 +1100,25 @@ body {
 /* index.css — Стили для навигации на главной */
 
 /* Оверлей (фон при открытом меню) */
+.side-menu-header {
+    display: flex;
+    justify-content: space-between; /* Расталкивает текст и крестик по краям */
+    align-items: center;            /* Выравнивает их по одной линии по вертикали */
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    width: 100%;                    /* Гарантируем, что хедер занимает всю ширину меню */
+}
+
 .side-menu-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px); /* Тот самый эффект блюра как в каталоге */
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
     z-index: 2000;
     opacity: 0;
-    visibility: hidden;
-    transition: all 0.4s ease;
+    visibility: hidden; /* КРИТИЧНО: чтобы не блокировать клики */
+    transition: 0.3s ease;
 }
 
 .side-menu-overlay.active {
@@ -1116,47 +1126,115 @@ body {
     visibility: visible;
 }
 
-/* Контейнер самого меню */
+/* Контейнер меню */
 .side-menu-content {
     position: absolute;
-    top: 0;
-    right: -300px; /* Изначально спрятано справа */
+    right: -300px;
     width: 300px;
     height: 100%;
-    background: #12141a; /* Темный люкс */
+    background: #12141a;
     padding: 30px 20px;
-    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
-    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .side-menu-overlay.active .side-menu-content {
-    right: 0; /* Выезжает при активации */
+    right: 0;
 }
 
-/* Стили заголовка меню */
-.side-menu-header {
+/* Ссылки и Кнопки */
+.menu-item-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    text-decoration: none;
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 10px;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.menu-item-link:hover {
+    background: rgba(70, 161, 223, 0.2);
+    color: #46a1df;
+}
+
+/* Секция истории (Аудитор) */
+.orders-history-section {
+    display: none; 
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.order-item-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.order-date { font-size: 11px; color: #46a1df; margin-bottom: 4px; display: block; }
+.order-info { font-size: 13px; color: #ccc; }
+
+/* Стили для карточек в истории заказов */
+#orders-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.order-card {
+    background: rgba(255, 255, 255, 0.03); /* Едва заметный фон */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+.order-card:hover {
+    border-color: #46a1df; /* Твой синий цвет при наведении */
+    background: rgba(70, 161, 223, 0.05);
+}
+
+.order-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding-bottom: 15px;
-}
-
-.menu-title {
-    color: #46a1df; /* Твой синий акцент */
+    font-size: 11px;
+    color: #46a1df;
     font-weight: 800;
-    letter-spacing: 1px;
-    font-size: 14px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.close-side-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 30px;
-    cursor: pointer;
-    line-height: 1;
+.order-card-body {
+    font-size: 14px;
+    color: #ffffff;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+.order-price {
+    display: block;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 900;
+    color: #fff;
+}
+
+/* Сообщение, если заказов нет */
+.order-empty-message {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+    margin-top: 40px;
 }
 
 /* Ссылки в меню */

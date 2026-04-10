@@ -11,7 +11,7 @@
     <header class="header">
         <div class="header-container">
             <div class="logo-wrapper" id="main-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
-                <span class="logo-text-w">WATER</span><span class="logo-text-m">MAR</span>
+                <img src="./img/watermar logo.jpg" alt="Aqua Service" class="logo-img">
             </div>
             
             <div class="header-actions">
@@ -47,6 +47,23 @@
                     <div class="menu-item-icon">ℹ️</div>
                     <span>О нас</span>
                 </a>
+
+                <a href="#" class="menu-item-link" onclick="showOrders()">
+                    <span>📋</span> Мои заказы
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="orders-overlay" class="side-menu-overlay" onclick="closeOrders()">
+        <div class="side-menu-content" onclick="event.stopPropagation()">
+            <div class="side-menu-header">
+                <span class="menu-title">ИСТОРИЯ ЗАКАЗОВ</span>
+                <button class="close-side-btn" onclick="closeOrders()">&times;</button>
+            </div>
+            <div id="orders-list" class="side-menu-body">
+                <div class="order-empty-message" style="text-align: center; color: rgba(255,255,255,0.4); margin-top: 50px;">
+                    История заказов пуста
+                </div>
             </div>
         </div>
     </div>
@@ -113,19 +130,19 @@
             <button class="modal-close" id="modal-close-btn" onclick="closeModal()">&times;</button>
             
             <div class="modal-body">
-                <h2 class="modal-title" id="modal-title">Заявка</h2>
+                <h2 class="modal-title" id="modal-title">Оформление заказа</h2>
                 <p class="modal-subtitle">Оставьте ваши контакты, и мы свяжемся с вами в течение 15 минут.</p>
                 
                 <form class="modal-form" id="order-form">
                     <div class="form-group">
-                        <input type="text" id="user-name" name="name" placeholder="Как вас зовут?" required>
+                        <input type="text" id="user-name" name="name" class="modal-input" placeholder="Как вас зовут?" required>
                     </div>
                     
                     <div class="form-group">
-                        <input type="tel" id="user-phone" name="phone" placeholder="+380 (__) ___-__-__" required>
+                        <input type="tel" id="user-phone" name="phone" class="modal-input" placeholder="+380 (__) ___-__-__" required>
                     </div>
                     
-                    <button type="submit" class="btn-submit">
+                    <button type="submit" class="btn-submit btn-send-order">
                         <span>Отправить заявку</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -207,13 +224,13 @@
             <div class="product-grid">
                 <div class="product-card" onclick="openProductModal('osmosis')">
                     <div class="product-image">
-                        <img src="./img/photo_2026-04-07_00-25-09.jpg" alt="Система осмоса"> <div class="product-tag">Top Sale</div>
+                        <img src="./img/1.png" alt="Система осмоса">
                     </div>
                     <div class="product-info">
-                        <h3>Обратный осмос RO-6</h3>
-                        <p>6 ступеней очистки с минерализатором</p>
+                        <h3>Watermar 5-506</h3>
+                        <p>Без минерализатора, кран капля, бак 12 л</p>
                         <div class="product-footer">
-                            <span class="price">8 500 ₴</span>
+                            <span class="price">9 903 ₴</span>
                             <button class="add-to-cart-simple">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
                             </button>
@@ -223,13 +240,13 @@
 
                 <div class="product-card" onclick="openProductModal('softener')">
                     <div class="product-image">
-                        <img src="./img/photo_2026-04-07_00-25-12.jpg" alt="Умягчитель">
+                        <img src="./img/2.png" alt="Умягчитель">
                     </div>
                     <div class="product-info">
-                        <h3>Умягчитель Cabinet</h3>
+                        <h3>Watermar 6-50 P</h3>
                         <p>Компактная система для квартиры</p>
                         <div class="product-footer">
-                            <span class="price">14 200 ₴</span>
+                            <span class="price">14 100 ₴</span>
                             <button class="add-to-cart-simple">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
                             </button>
@@ -239,13 +256,13 @@
 
                 <div class="product-card" onclick="openProductModal('column')">
                     <div class="product-image">
-                        <img src="./img/photo_2026-04-07_00-25-14.jpg" alt="Колонна">
+                        <img src="./img/3.png" alt="Колонна">
                     </div>
                     <div class="product-info">
-                        <h3>Колонна 1054</h3>
-                        <p>Комплексная очистка для дома</p>
+                        <h3>Watermar 6-50 PpH "La Perla"</h3>
+                        <p>С насосом, минерализатором и рН корректором .</p>
                         <div class="product-footer">
-                            <span class="price">21 000 ₴</span>
+                            <span class="price">14 963 ₴</span>
                             <button class="add-to-cart-simple">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
                             </button>

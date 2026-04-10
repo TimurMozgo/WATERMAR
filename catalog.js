@@ -249,7 +249,6 @@ function closeSideMenu() {
 }
 
 // ОФОРМЛЕНИЕ ЗАКАЗА
-// ОФОРМЛЕНИЕ ЗАКАЗА
 function openCheckout() {
     if (cart.length === 0) {
         alert("Сначала добавь что-то в корзину!");
@@ -259,10 +258,8 @@ function openCheckout() {
     const overlay = document.getElementById('checkout-overlay');
     overlay.classList.add('active');
 
-    // Находим инпут телефона и вешаем на него живой счетчик
     const phoneInput = document.getElementById('user-phone');
     
-    // Создаем или находим элемент подсказки
     let hint = document.getElementById('phone-hint');
     if (!hint) {
         hint = document.createElement('div');
@@ -273,17 +270,16 @@ function openCheckout() {
         phoneInput.parentNode.insertBefore(hint, phoneInput.nextSibling);
     }
 
-    // Логика проверки длины (для Украины это обычно 13 символов с +380)
     const updateHint = () => {
         const len = phoneInput.value.length;
-        const target = 13; // Формат +380XXXXXXXXX
+        const target = 13; 
         
         if (len < target) {
             hint.innerText = `Нужно еще ${target - len} цифр (формат: +380...)`;
-            hint.style.color = '#ff4d4d'; // Красный, если мало
+            hint.style.color = '#ff4d4d'; 
         } else if (len === target) {
             hint.innerText = `Отлично, номер заполнен!`;
-            hint.style.color = '#4CAF50'; // Зеленый, если в точку
+            hint.style.color = '#4CAF50'; 
         } else {
             hint.innerText = `Слишком много цифр (${len} из ${target})`;
             hint.style.color = '#ff4d4d';
@@ -291,7 +287,7 @@ function openCheckout() {
     };
 
     phoneInput.addEventListener('input', updateHint);
-    updateHint(); // Инициализируем при открытии
+    updateHint(); 
 }
 
 function closeCheckout() {
@@ -302,7 +298,7 @@ function closeCheckout() {
     }, 500);
 }
 
-// ОТПРАВКА В n8n
+// ОТПРАВКА В n8n И СОХРАНЕНИЕ В ИСТОРИЮ (АУДИТОР)
 async function sendOrderToN8N() {
     const name = document.getElementById('user-name').value;
     const phone = document.getElementById('user-phone').value;
@@ -320,11 +316,12 @@ async function sendOrderToN8N() {
     btn.disabled = true;
     btn.innerText = "ОТПРАВКА...";
 
+    const totalPrice = cart.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
     const orderData = {
         customer_name: name,
         customer_phone: phone,
         items: cart,
-        total_price: cart.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0),
+        total_price: totalPrice,
         order_date: new Date().toLocaleString()
     };
 
@@ -336,6 +333,18 @@ async function sendOrderToN8N() {
         });
 
         if (response.ok) {
+            // --- ЛОГИКА АУДИТОРА: СОХРАНЯЕМ В ЛОКАЛЬНУЮ ИСТОРИЮ ---
+            const newOrder = {
+                date: new Date().toLocaleDateString('uk-UA'),
+                item: cart.map(i => `${i.name} (${i.quantity} шт.)`).join(', '),
+                price: totalPrice.toLocaleString() + ' ₴'
+            };
+
+            const history = JSON.parse(localStorage.getItem('user_orders') || '[]');
+            history.unshift(newOrder);
+            localStorage.setItem('user_orders', JSON.stringify(history));
+            // ---------------------------------------------------
+
             formContent.style.display = 'none';
             successContent.style.display = 'block';
             cart = []; 
@@ -349,5 +358,51 @@ async function sendOrderToN8N() {
     } finally {
         btn.disabled = false;
         btn.innerText = "Отправить заявку";
+    }
+}
+
+// ==========================================
+// ФУНКЦИИ ИСТОРИИ ЗАКАЗОВ (АУДИТОР)
+// ==========================================
+
+function showOrders() {
+    closeSideMenu(); // Закрываем боковое меню перед открытием истории
+    const ordersOverlay = document.getElementById('orders-overlay');
+    if (ordersOverlay) {
+        ordersOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        renderOrdersList(); 
+    }
+}
+
+function closeOrders() {
+    const ordersOverlay = document.getElementById('orders-overlay');
+    if (ordersOverlay) {
+        ordersOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function renderOrdersList() {
+    const list = document.getElementById('orders-list');
+    if (!list) return;
+
+    // Читаем реальные данные, которые сохранили в sendOrderToN8N
+    const savedOrders = JSON.parse(localStorage.getItem('user_orders') || '[]');
+
+    if (savedOrders.length > 0) {
+        list.innerHTML = savedOrders.map(order => `
+            <div class="order-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 15px; padding: 18px; margin-bottom: 12px;">
+                <div style="text-align: right; font-size: 11px; color: #46a1df; margin-bottom: 8px; font-weight: 800;">
+                    ${order.date}
+                </div>
+                <div style="font-size: 14px; color: white; line-height: 1.4;">
+                    ${order.item}
+                    <div style="margin-top: 10px; font-size: 18px; font-weight: 800; color: #fff;">${order.price}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        list.innerHTML = '<p style="text-align:center; color:rgba(255,255,255,0.3); margin-top:40px;">История пуста</p>';
     }
 }
