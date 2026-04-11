@@ -6,20 +6,20 @@ const WEBHOOK_URL = 'https://tiktiok.xyz/webhook/708aaac4-0733-4a46-ad0c-f919e3c
 const productsData = {
     'osmosis': { 
         title: 'Watermar 5-50', 
-        price: '180$ + 25$(1000 монтаж)', 
-        desc: 'Без минерализатора, кран капля, бак 12 л', 
+        price: 9903, 
+        desc: '180$ + 25$(1000 монтаж). Без минерализатора, кран капля, бак 12 л', 
         img: '1.png' 
     },
     'softener': { 
         title: 'Watermar 6-50 P', 
-        price: '260$ + 30$ (1500 грн. монтаж) ', 
-        desc: 'С насосом, минерализатором и рН корректором . Кран модерн', 
+        price: 14100, 
+        desc: '260$ + 30$ (1500 грн. монтаж). С насосом, минерализатором и рН корректором', 
         img: '2.png' 
     },
     'column': { 
         title: 'Watermar 6-50 PpH "La Perla"', 
-        price: '260$+ 50$ (рН)+ 35$ (1700 грн. монтаж) ', 
-        desc: 'С насосом, минерализатором и рН корректором . Кран модерн', 
+        price: 14963, 
+        desc: '260$+ 50$ (рН)+ 35$ (1700 грн. монтаж). С насосом и минерализатором', 
         img: '3.png' 
     }
 };
@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let totalSum = 0;
         const productsList = cart.map((item, index) => {
-            const priceNum = parseInt(item.price.replace(/\s/g, '')) || 0;
+            // ФИКС: Умная проверка. Если число - берем число, если строка - чистим.
+            const priceNum = typeof item.price === 'number' ? item.price : parseInt(item.price.toString().replace(/\s/g, '')) || 0;
             totalSum += priceNum;
             return `${index + 1}. ${item.title}`;
         }).join('\n');
@@ -167,7 +168,8 @@ function updateCartUI() {
         list.innerHTML = '';
         let total = 0;
         cart.forEach((item, index) => {
-            const priceValue = parseInt(item.price.replace(/\s/g, '')) || 0;
+            // ФИКС: Берем цену напрямую, так как это число
+            const priceValue = typeof item.price === 'number' ? item.price : parseInt(item.price.toString().replace(/\s/g, '')) || 0;
             total += priceValue;
             const imgSrc = item.img.includes('http') ? item.img : `./img/${item.img}`;
 
@@ -177,7 +179,7 @@ function updateCartUI() {
                         <div class="cart-item-img-container"><img src="${imgSrc}" alt="${item.title}"></div>
                         <div class="cart-item-details">
                             <div class="cart-item-title">${item.title}</div>
-                            <div class="cart-item-info-line">1 шт. x ${item.price}</div>
+                            <div class="cart-item-info-line">1 шт. x ${item.price.toLocaleString()} ₴</div>
                         </div>
                     </div>
                     <button class="cart-item-remove" onclick="removeFromCart(${index})">&times;</button>
@@ -241,9 +243,9 @@ function openProductModal(id) {
     if (content && product) {
         const imagePath = `./img/${product.img}`; 
         
-        // ВКЛЮЧАЕМ режим "картинка в край"
         content.classList.add('product-mode');
 
+        // ПЕРЕСТАВИЛИ: Сначала описание, потом цена
         content.innerHTML = `
             <div class="modal-image-container">
                 <img src="${imagePath}" alt="${product.title}" class="modal-top-img">
@@ -251,8 +253,10 @@ function openProductModal(id) {
             
             <div class="modal-text-section">
                 <h2 class="modal-title">${product.title}</h2>
-                <div class="price-large">${product.price}</div>
+                
                 <p class="modal-subtitle">${product.desc}</p>
+                
+                <div class="price-large" style="margin-top: 10px;">${product.price.toLocaleString()} ₴</div>
                 
                 <button class="btn-add-cart" style="width: 100%; margin: 0;" onclick="addToCart('${id}')">
                     Добавить в корзину
@@ -264,7 +268,6 @@ function openProductModal(id) {
     }
 }
 
-// ВАЖНО: Добавь эту строку в начало функций открытия КОРЗИНЫ и ЗАКАЗА
 // content.classList.remove('product-mode'); // Это вернет отступы
 
 // 6. УВЕДОМЛЕНИЯ
@@ -274,11 +277,12 @@ function showSuccessToast(title, desc, isError = false) {
     const tDesc = document.querySelector('.toast-desc');
     const tIcon = document.querySelector('.toast-icon');
     
-    if (toast && tTitle && tDesc && tIcon) {
+    // Если иконки нет в HTML, скрипт всё равно должен показать плашку
+    if (toast && tTitle && tDesc) {
         tTitle.textContent = title;
         tDesc.textContent = desc;
         isError ? toast.classList.add('error') : toast.classList.remove('error');
-        tIcon.textContent = isError ? '✕' : '✓';
+        if (tIcon) tIcon.textContent = isError ? '✕' : '✓';
         toast.classList.add('active');
         setTimeout(() => toast.classList.remove('active'), 4000);
     }
@@ -320,13 +324,14 @@ function filterCatalog(category = 'all') {
 
     filtered.forEach(product => {
         const id = Object.keys(productsData).find(key => productsData[key] === product);
+        // ФИКС: Красивый вывод цены в карточке каталога
         grid.innerHTML += `
             <div class="product-card" onclick="openProductModal('${id}')">
                 <div class="product-img-wrapper"><img src="./img/${product.img}" alt="${product.title}" loading="lazy"></div>
                 <div class="product-info">
                     <h3 class="product-title">${product.title}</h3>
                     <div class="product-price-row">
-                        <span class="product-price">${product.price}</span>
+                        <span class="product-price">${product.price.toLocaleString()} ₴</span>
                         <button class="add-quick-btn" onclick="event.stopPropagation(); addToCart('${id}')">+</button>
                     </div>
                 </div>
