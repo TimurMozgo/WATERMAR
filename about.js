@@ -63,3 +63,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// КНОПКА ПОМОЩИ ( ЧАТ )
+
+function manageChatButton() {
+    const chatBtn = document.getElementById('saber-chat-container');
+    
+    if (!chatBtn) return;
+
+    function showButton() {
+        chatBtn.classList.add('visible'); // Показываем
+        
+        // Через 30 секунд убираем
+        setTimeout(() => {
+            chatBtn.classList.remove('visible');
+            
+            // Через 60 секунд (итого 90 от старта) запускаем цикл заново
+            setTimeout(showButton, 60000); 
+        }, 30000);
+    }
+
+    // Первый запуск через 5 секунд после загрузки, чтобы не пугать сразу
+    setTimeout(showButton, 5000);
+}
+
+// Запускаем менеджер после загрузки страницы
+document.addEventListener('DOMContentLoaded', manageChatButton);

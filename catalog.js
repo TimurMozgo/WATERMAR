@@ -1,11 +1,26 @@
 // ==========================================
-// КАТАЛОГ: ЗАГРУЗКА ДАННЫХ И ОТРИСОВКА
+// КАТАЛОГ: ЗАГРУЗКА ДАННЫХ И ОТРИСОВКА (PRO ВЕРСИЯ)
 // ==========================================
 
 const API_URL = 'https://tiktiok.xyz/webhook/997f03bf-9029-4117-935b-d9cfedfd92e6';
 let allProducts = []; 
-let cart = []; 
-let currentQuantity = 1; // Глобальная переменная для счетчика в модалке
+
+// ИСПОЛЬЗУЕМ УНИКАЛЬНЫЙ КЛЮЧ ДЛЯ КАТАЛОГА
+let cart = JSON.parse(localStorage.getItem('watermar_catalog_cart')) || []; 
+
+let currentQuantity = 1; 
+
+function getProductImage(product) {
+    if (product.photo && product.photo.includes('http')) return product.photo;
+    if (product.img && product.img.includes('http')) return product.img;
+    
+    const name = String(product.name || product.title).toLowerCase();
+    if (name.includes('5-50')) return './img/1.png';
+    if (name.includes('6-50 p') && !name.includes('perla')) return './img/2.png';
+    if (name.includes('la perla')) return './img/3.png';
+
+    return product.photo || product.img || 'https://via.placeholder.com/300x300?text=Нет+фото';
+}
 
 async function loadProducts() {
     try {
@@ -28,7 +43,7 @@ async function loadProducts() {
 function filterCatalog(category) {
     const grid = document.getElementById('full-catalog-grid');
     if (!grid) return;
-
+    
     grid.innerHTML = ''; 
 
     const filtered = category === 'all' 
@@ -36,15 +51,17 @@ function filterCatalog(category) {
         : allProducts.filter(p => String(p.category).trim() === String(category).trim());
 
     if (filtered.length === 0) {
-        grid.innerHTML = `<p style="text-align:center; grid-column:1/-1; padding:40px; color:#666;">Товаров пока нет.</p>`;
+        grid.innerHTML = `<p style="text-align:center; grid-column:1/-1; padding:40px; color:#666;">Товаров пока нет в этой категории.</p>`;
         return;
     }
 
     filtered.forEach(product => {
+        const productImage = getProductImage(product);
+
         grid.innerHTML += `
             <div class="product-card" id="card-${product.id}" onclick="prepareAddToCart('${product.id}')">
                 <div class="product-image">
-                    <img src="${product.photo}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x300?text=Нет+фото'">
+                    <img src="${productImage}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x300?text=Ошибка+загрузки'">
                 </div>
                 <div class="product-info">
                     <h3 class="product-title">${product.name}</h3>
@@ -60,25 +77,39 @@ function filterCatalog(category) {
                 </div>
             </div>`;
     });
+    
     updateTabsUI(category);
 }
 
-// ПЕРВЫЙ ШАГ: Показываем Pop-up товара со счетчиком
 function prepareAddToCart(productId) {
-    const product = allProducts.find(p => String(p.id) === String(productId));
+    let product = allProducts.find(p => String(p.id) === String(productId));
+
+    if (!product) {
+        const card = document.querySelector(`[onclick*="'${productId}'"]`) || event.currentTarget;
+        if (card) {
+            product = {
+                id: productId,
+                name: card.querySelector('.product-title')?.innerText || 'Товар',
+                price: parseFloat(card.querySelector('.price')?.innerText.replace(/[^\d.]/g, '')) || 0,
+                photo: card.querySelector('img')?.src || ''
+            };
+        }
+    }
+
     if (!product) return;
 
-    currentQuantity = 1; // Всегда сбрасываем на 1 при открытии
+    currentQuantity = 1; 
     const overlay = document.getElementById('product-confirm-overlay');
     const modalBody = document.getElementById('confirm-modal-body');
 
     if (overlay && modalBody) {
+        const productImage = getProductImage(product);
+
         modalBody.innerHTML = `
-            <img src="${product.photo}" class="confirm-modal-img full-width" onerror="this.src='https://via.placeholder.com/400x300?text=Нет+фото'">
-            
+            <img src="${productImage}" class="confirm-modal-img full-width" onerror="this.src='https://via.placeholder.com/400x300?text=Ошибка+загрузки'">
             <div class="confirm-modal-info-padding">
-                <h2 class="confirm-modal-title">${product.name}</h2>
-                <p class="confirm-modal-desc">${product.description || 'Комплексная очистка для дома. Идеальное решение для вашей квартиры.'}</p>
+                <h2 class="confirm-modal-title" data-id="${product.id}">${product.name}</h2>
+                <p class="confirm-modal-desc">${product.description || 'Идеальное решение для вашей системы водоснабжения.'}</p>
                 
                 <div class="modal-qty-container" style="display: flex; align-items: center; justify-content: center; gap: 20px; margin: 20px 0;">
                     <button onclick="updateModalQty(-1)" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: none; color: white; font-size: 20px; cursor: pointer;">−</button>
@@ -86,32 +117,32 @@ function prepareAddToCart(productId) {
                     <button onclick="updateModalQty(1)" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: none; color: white; font-size: 20px; cursor: pointer;">+</button>
                 </div>
 
-                <div class="confirm-modal-price-bottom" id="modal-total-price">${product.price} ₴</div>
+                <div class="confirm-modal-price-bottom" 
+                     id="modal-total-price" 
+                     data-base-price="${product.price}">
+                     ${product.price.toLocaleString()} ₴
+                </div>
                 
-                <button class="btn-confirm-final" onclick="executeAddToCart('${product.id}')">
-                    Добавить в корзину
-                </button>
-            </div>
-        `;
-
+                <button class="btn-confirm-final" onclick="executeAddToCart('${product.id}')">Добавить в корзину</button>
+            </div>`;
+        
         overlay.classList.add('active');
         document.body.style.overflow = 'hidden'; 
     }
 }
 
-// Функция обновления цифры в модалке
 function updateModalQty(delta) {
     const display = document.getElementById('modal-qty-display');
     const priceDisplay = document.getElementById('modal-total-price');
-    const productTitle = document.querySelector('.confirm-modal-title').innerText;
-    const product = allProducts.find(p => p.name === productTitle);
+    const basePrice = parseFloat(priceDisplay.dataset.basePrice);
 
     currentQuantity += delta;
     if (currentQuantity < 1) currentQuantity = 1;
 
     if (display) display.innerText = currentQuantity;
-    if (priceDisplay && product) {
-        priceDisplay.innerText = `${(Number(product.price) * currentQuantity).toLocaleString()} ₴`;
+    if (priceDisplay) {
+        const total = basePrice * currentQuantity;
+        priceDisplay.innerText = `${total.toLocaleString()} ₴`;
     }
 }
 
@@ -123,26 +154,37 @@ function closeConfirmModal() {
     }
 }
 
-// ВТОРОЙ ШАГ: Реальное добавление с учетом количества
 function executeAddToCart(productId) {
-    const product = allProducts.find(p => String(p.id) === String(productId));
-    if (product) {
-        // Создаем копию товара с полем количества для корзины
-        const itemToAdd = { ...product, quantity: currentQuantity };
-        
-        // Добавляем в массив корзины
-        cart.push(itemToAdd);
-        
-        updateCartUI();
-        showToast(`${product.name} x${currentQuantity}`);
-        closeConfirmModal();
-
-        const counter = document.querySelector('.cart-count');
-        if (counter) {
-            counter.style.transform = 'scale(1.3)';
-            setTimeout(() => counter.style.transform = 'scale(1)', 200);
-        }
+    let product = allProducts.find(p => String(p.id) === String(productId));
+    
+    // Если товара нет в API списке (например, ручное добавление), создаем объект из модалки
+    if (!product) {
+        product = {
+            id: productId,
+            name: document.querySelector('.confirm-modal-title').innerText,
+            price: parseFloat(document.getElementById('modal-total-price').dataset.basePrice)
+        };
     }
+
+    const existingItem = cart.find(item => String(item.id) === String(product.id));
+
+    if (existingItem) {
+        existingItem.quantity += currentQuantity;
+    } else {
+        const itemToAdd = { 
+            id: product.id,
+            title: product.name, 
+            price: Number(product.price),
+            img: getProductImage(product), 
+            quantity: currentQuantity 
+        };
+        cart.push(itemToAdd);
+    }
+    
+    localStorage.setItem('watermar_catalog_cart', JSON.stringify(cart));
+    updateCartUI();
+    showToast(`${product.name} x${currentQuantity}`);
+    closeConfirmModal();
 }
 
 function updateTabsUI(category) {
@@ -154,69 +196,46 @@ function updateTabsUI(category) {
     });
 }
 
-// ==========================================
-// ЛОГИКА КОРЗИНЫ И УВЕДОМЛЕНИЙ
-// ==========================================
-
-function openCart() {
-    const overlay = document.getElementById('cart-modal-overlay');
-    if (overlay) {
-        overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function closeCart() {
-    const overlay = document.getElementById('cart-modal-overlay');
-    if (overlay) {
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-}
-
-function showToast(productName) {
-    const toast = document.getElementById('toast-added');
-    const toastNameSpan = document.getElementById('toast-product-name');
-    
-    if (toast && toastNameSpan) {
-        toastNameSpan.innerText = productName;
-        toast.classList.remove('active');
-        void toast.offsetWidth; 
-        toast.classList.add('active');
-
-        setTimeout(() => {
-            toast.classList.remove('active');
-        }, 3500);
-    }
-}
-
 function updateCartUI() {
     const cartList = document.getElementById('cart-items-list');
     const cartCount = document.querySelector('.cart-count');
     const cartTotal = document.getElementById('cart-total');
 
-    // Считаем общее кол-во предметов для иконки
     const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
     if (cartCount) cartCount.innerText = totalItems;
 
     if (cartList) {
         let htmlContent = '';
-
         if (cart.length === 0) {
-            htmlContent = '<p class="empty-msg" style="text-align:center; color:#666; padding:40px;">В корзине пока пусто</p>';
+            htmlContent = '<p class="empty-msg" style="text-align:center; color:rgba(255,255,255,0.3); padding:40px; font-size: 14px;">В корзине пока пусто</p>';
         } else {
-            htmlContent = cart.map((item, index) => `
-                <div class="cart-item">
-                    <img src="${item.photo}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/60/252936/fff?text=?'">
-                    <div class="cart-item-info">
-                        <h4>${item.name}</h4>
-                        <p>${item.quantity} шт. x ${item.price} ₴</p>
+            htmlContent = cart.map((item, index) => {
+                return `
+                <div class="cart-item" id="cart-item-${index}" style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 10px; margin-bottom: 10px;">
+                    <img src="${item.img}" class="cart-item-img" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #1a1d26;">
+                    
+                    <div class="cart-item-info" style="flex-grow: 1;">
+                        <h4 style="margin: 0 0 6px 0; font-size: 13px; color: white; font-weight: 500;">${item.title}</h4>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <!-- Счётчик -->
+                            <div style="display: flex; align-items: center; background: rgba(255,255,255,0.08); border-radius: 8px; padding: 2px;">
+                                <button onclick="changeQtyInCart(${index}, -1)" style="width: 24px; height: 24px; border: none; background: none; color: white; cursor: pointer; font-size: 16px;">−</button>
+                                <span style="font-size: 13px; font-weight: 600; min-width: 20px; text-align: center; color: white;">${item.quantity}</span>
+                                <button onclick="changeQtyInCart(${index}, 1)" style="width: 24px; height: 24px; border: none; background: none; color: white; cursor: pointer; font-size: 16px;">+</button>
+                            </div>
+                            
+                            <p style="margin: 0; color: #46a1df; font-weight: 700; font-size: 14px;">${(item.price * item.quantity).toLocaleString()} ₴</p>
+                        </div>
                     </div>
-                    <button onclick="removeFromCart(${index})" style="background:none; border:none; color:rgba(255,255,255,0.2); font-size:20px; cursor:pointer; padding:5px;">&times;</button>
-                </div>
-            `).join('');
+
+                    <!-- Удаление -->
+                    <button onclick="animateRemoveFromCart(${index})" style="background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: rgba(255,255,255,0.4); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px;">
+                        &times;
+                    </button>
+                </div>`;
+            }).join('');
         }
-        
         cartList.innerHTML = htmlContent;
     }
 
@@ -224,102 +243,64 @@ function updateCartUI() {
     if (cartTotal) cartTotal.innerText = `${total.toLocaleString()} ₴`;
 }
 
+function changeQtyInCart(index, delta) {
+    cart[index].quantity += delta;
+    if (cart[index].quantity <= 0) {
+        animateRemoveFromCart(index);
+    } else {
+        localStorage.setItem('watermar_catalog_cart', JSON.stringify(cart));
+        updateCartUI();
+    }
+}
+
+function animateRemoveFromCart(index) {
+    const itemElement = document.getElementById(`cart-item-${index}`);
+    if (itemElement) {
+        itemElement.style.opacity = '0';
+        itemElement.style.transform = 'translateX(50px)';
+        setTimeout(() => removeFromCart(index), 400);
+    } else {
+        removeFromCart(index);
+    }
+}
+
 function removeFromCart(index) {
     cart.splice(index, 1);
+    localStorage.setItem('watermar_catalog_cart', JSON.stringify(cart));
     updateCartUI();
 }
 
-document.addEventListener('DOMContentLoaded', loadProducts);
-
-// МЕНЮ НАВИГАЦИИ
-function openSideMenu() {
-    const sideMenu = document.getElementById('side-menu-overlay');
-    if (sideMenu) {
-        sideMenu.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
+function openCart() {
+    document.getElementById('cart-modal-overlay')?.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
-function closeSideMenu() {
-    const sideMenu = document.getElementById('side-menu-overlay');
-    if (sideMenu) {
-        sideMenu.classList.remove('active');
-        document.body.style.overflow = '';
-    }
+function closeCart() {
+    document.getElementById('cart-modal-overlay')?.classList.remove('active');
+    document.body.style.overflow = '';
 }
 
-// ОФОРМЛЕНИЕ ЗАКАЗА
 function openCheckout() {
-    if (cart.length === 0) {
-        alert("Сначала добавь что-то в корзину!");
-        return;
-    }
-    
-    const overlay = document.getElementById('checkout-overlay');
-    overlay.classList.add('active');
-
-    const phoneInput = document.getElementById('user-phone');
-    
-    let hint = document.getElementById('phone-hint');
-    if (!hint) {
-        hint = document.createElement('div');
-        hint.id = 'phone-hint';
-        hint.style.fontSize = '12px';
-        hint.style.marginTop = '5px';
-        hint.style.color = 'rgba(255,255,255,0.5)';
-        phoneInput.parentNode.insertBefore(hint, phoneInput.nextSibling);
-    }
-
-    const updateHint = () => {
-        const len = phoneInput.value.length;
-        const target = 13; 
-        
-        if (len < target) {
-            hint.innerText = `Нужно еще ${target - len} цифр (формат: +380...)`;
-            hint.style.color = '#ff4d4d'; 
-        } else if (len === target) {
-            hint.innerText = `Отлично, номер заполнен!`;
-            hint.style.color = '#4CAF50'; 
-        } else {
-            hint.innerText = `Слишком много цифр (${len} из ${target})`;
-            hint.style.color = '#ff4d4d';
-        }
-    };
-
-    phoneInput.addEventListener('input', updateHint);
-    updateHint(); 
+    if (cart.length === 0) return;
+    document.getElementById('checkout-overlay')?.classList.add('active');
 }
 
 function closeCheckout() {
-    document.getElementById('checkout-overlay').classList.remove('active');
-    setTimeout(() => {
-        document.getElementById('checkout-form-container').style.display = 'block';
-        document.getElementById('checkout-success').style.display = 'none';
-    }, 500);
+    document.getElementById('checkout-overlay')?.classList.remove('active');
 }
 
-// ОТПРАВКА В n8n И СОХРАНЕНИЕ В ИСТОРИЮ (АУДИТОР)
 async function sendOrderToN8N() {
     const name = document.getElementById('user-name').value;
     const phone = document.getElementById('user-phone').value;
-    const btn = document.getElementById('submit-order-btn');
-    const formContent = document.getElementById('checkout-form-container');
-    const successContent = document.getElementById('checkout-success');
-
     const ORDER_API_URL = 'https://tiktiok.xyz/webhook/708aaac4-0733-4a46-ad0c-f919e3c08698';
 
-    if (!name || !phone) {
-        alert("Заполни все поля, бро!");
-        return;
-    }
-
-    btn.disabled = true;
-    btn.innerText = "ОТПРАВКА...";
+    if (!name || !phone) return;
 
     const totalPrice = cart.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
+    
     const orderData = {
         customer_name: name,
-        customer_phone: phone,
+        customer_phone: Number(phone),
         items: cart,
         total_price: totalPrice,
         order_date: new Date().toLocaleString()
@@ -327,82 +308,41 @@ async function sendOrderToN8N() {
 
     try {
         const response = await fetch(ORDER_API_URL, { 
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(orderData) 
         });
 
         if (response.ok) {
-            // --- ЛОГИКА АУДИТОРА: СОХРАНЯЕМ В ЛОКАЛЬНУЮ ИСТОРИЮ ---
-            const newOrder = {
-                date: new Date().toLocaleDateString('uk-UA'),
-                item: cart.map(i => `${i.name} (${i.quantity} шт.)`).join(', '),
-                price: totalPrice.toLocaleString() + ' ₴'
-            };
-
+            // Сохраняем в историю
             const history = JSON.parse(localStorage.getItem('user_orders') || '[]');
-            history.unshift(newOrder);
+            history.unshift({
+                date: new Date().toLocaleDateString('uk-UA'),
+                item: cart.map(i => `${i.title} (${i.quantity} шт.)`).join(', '),
+                price: totalPrice.toLocaleString() + ' ₴'
+            });
             localStorage.setItem('user_orders', JSON.stringify(history));
-            // ---------------------------------------------------
 
-            formContent.style.display = 'none';
-            successContent.style.display = 'block';
             cart = []; 
+            localStorage.removeItem('watermar_catalog_cart'); 
             updateCartUI();
-        } else {
-            throw new Error("Ошибка сервера");
+            closeCheckout();
+            closeCart();
         }
-    } catch (error) {
-        console.error("Ошибка при отправке заказа:", error);
-        alert("Что-то пошло не так. Попробуй еще раз.");
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "Отправить заявку";
+    } catch (e) { console.error(e); }
+}
+
+function showToast(productName) {
+    const toast = document.getElementById('toast-added');
+    const toastNameSpan = document.getElementById('toast-product-name');
+    if (toast && toastNameSpan) {
+        toastNameSpan.innerText = productName;
+        toast.classList.add('active');
+        setTimeout(() => toast.classList.remove('active'), 3500);
     }
 }
 
-// ==========================================
-// ФУНКЦИИ ИСТОРИИ ЗАКАЗОВ (АУДИТОР)
-// ==========================================
-
-function showOrders() {
-    closeSideMenu(); // Закрываем боковое меню перед открытием истории
-    const ordersOverlay = document.getElementById('orders-overlay');
-    if (ordersOverlay) {
-        ordersOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        renderOrdersList(); 
-    }
-}
-
-function closeOrders() {
-    const ordersOverlay = document.getElementById('orders-overlay');
-    if (ordersOverlay) {
-        ordersOverlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-}
-
-function renderOrdersList() {
-    const list = document.getElementById('orders-list');
-    if (!list) return;
-
-    // Читаем реальные данные, которые сохранили в sendOrderToN8N
-    const savedOrders = JSON.parse(localStorage.getItem('user_orders') || '[]');
-
-    if (savedOrders.length > 0) {
-        list.innerHTML = savedOrders.map(order => `
-            <div class="order-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 15px; padding: 18px; margin-bottom: 12px;">
-                <div style="text-align: right; font-size: 11px; color: #46a1df; margin-bottom: 8px; font-weight: 800;">
-                    ${order.date}
-                </div>
-                <div style="font-size: 14px; color: white; line-height: 1.4;">
-                    ${order.item}
-                    <div style="margin-top: 10px; font-size: 18px; font-weight: 800; color: #fff;">${order.price}</div>
-                </div>
-            </div>
-        `).join('');
-    } else {
-        list.innerHTML = '<p style="text-align:center; color:rgba(255,255,255,0.3); margin-top:40px;">История пуста</p>';
-    }
-}
+document.addEventListener('DOMContentLoaded', () => {
+    loadProducts();
+    updateCartUI();
+});

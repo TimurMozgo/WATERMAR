@@ -1,5 +1,15 @@
 /* Полный код CSS с исправлениями фона и размеров */
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation
+}
+
 /* Общие стили */
 body {
     margin: 0;
@@ -229,6 +239,85 @@ body {
 }
 
 .menu-item-link:hover { background: rgba(70, 161, 223, 0.2); color: #46a1df; }
+
+/* КНОПКА ПОМОЩИ ( ЧАТ ) */
+
+/* Контейнер кнопки */
+.saber-chat-container {
+    position: fixed;
+    bottom: 30px;
+    right: -150px; /* Спрятана за экраном по умолчанию */
+    width: 100px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #000; /* Черный фон кнопки */
+    padding: 2px;
+    overflow: hidden; /* Чтобы линия не вылетала за границы */
+    transition: right 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Анимация выезда */
+    z-index: 1000;
+}
+
+/* Класс для появления */
+.saber-chat-container.visible {
+    right: 20px;
+}
+
+/* Saber эффект (вращающаяся линия) */
+.saber-line {
+    position: absolute;
+    /* Увеличиваем размер, чтобы края не обрезались при вращении */
+    width: 200%; 
+    height: 200%;
+    /* Используем sweep-gradient с мягкими переходами */
+    background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        #26efe9 25%, 
+        transparent 50%
+    );
+    /* Замедляем до 3-4 секунд для солидности */
+    animation: rotate-saber 3s linear infinite;
+    /* Размытие убирает резкие границы и создает эффект неонового свечения */
+    filter: blur(5px); 
+}
+
+@keyframes rotate-saber {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Сама кнопка внутри */
+.saber-chat-btn {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #111;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent; /* Тот самый фикс синего квадрата */
+}
+
+/* Маленькое свечение вокруг для объема */
+.saber-chat-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow: 0 0 15px rgba(38, 239, 233, 0.4);
+    border-radius: 12px;
+    z-index: 1;
+}
 
 /* МОБИЛКИ */
 @media (max-width: 768px) {

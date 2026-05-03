@@ -24,36 +24,42 @@ const productsData = {
     }
 };
 
-let cart = []; // Корзина
+// Инициализация корзины из памяти
+let cart = JSON.parse(localStorage.getItem('watermar_cart')) || [];
+window.currentQuantity = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
     const logo = document.getElementById('main-logo');
     const orderForm = document.getElementById('order-form');
 
-    // 2. ПРИВЯЗКА КНОПОК УСЛУГ
+    // Синхронизируем интерфейс сразу при загрузке любой страницы
+    updateCartUI();
+
+    // Привязка кнопок услуг
     document.getElementById('master-btn')?.addEventListener('click', () => openModal('master'));
     document.getElementById('analysis-btn')?.addEventListener('click', () => openModal('analysis'));
     document.getElementById('call-btn')?.addEventListener('click', () => openModal('call'));
 
-    // Логика логотипа
     logo?.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (document.getElementById('full-catalog-page')?.style.display === 'block') {
+            closeCatalog();
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         closeModal();
     });
 
-    // 3. ОБРАБОТЧИК ОТПРАВКИ (n8n "Аудитор")
+    // Обработчик формы заказа (n8n Аудитор)
     orderForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const submitBtn = orderForm.querySelector('.btn-submit');
         const originalBtnText = submitBtn.innerHTML;
 
         let totalSum = 0;
         const productsList = cart.map((item, index) => {
-            // ФИКС: Умная проверка. Если число - берем число, если строка - чистим.
-            const priceNum = typeof item.price === 'number' ? item.price : parseInt(item.price.toString().replace(/\s/g, '')) || 0;
-            totalSum += priceNum;
-            return `${index + 1}. ${item.title}`;
+            const itemTotal = item.price * (item.quantity || 1);
+            totalSum += itemTotal;
+            return `${index + 1}. ${item.title} (${item.quantity} шт.)`;
         }).join('\n');
 
         const serviceMapping = {
@@ -64,13 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const currentServiceId = orderForm.dataset.service || 'common';
-        const finalServiceName = serviceMapping[currentServiceId] || 'Общая заявка';
-
         const formData = {
             name: document.getElementById('user-name').value,
             phone: document.getElementById('user-phone').value,
-            service: finalServiceName,
-            products: productsList.trim() !== "" ? productsList : finalServiceName,
+            service: serviceMapping[currentServiceId] || 'Общая заявка',
+            products: productsList.trim() !== "" ? productsList : "Услуга: " + (serviceMapping[currentServiceId] || 'Общая'),
             totalPrice: totalSum > 0 ? totalSum.toLocaleString() + ' ₴' : '—',
             date: new Date().toLocaleString()
         };
@@ -86,32 +90,26 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                // --- ЛОГИКА АУДИТОРА: СОХРАНЕНИЕ В ИСТОРИЮ (БЕЗ НОМЕРОВ) ---
                 const newOrder = {
                     date: new Date().toLocaleDateString('uk-UA'),
                     item: formData.products.replace(/\d+\.\s/g, '').replace(/\n/g, ', '), 
                     price: formData.totalPrice
                 };
-
                 const history = JSON.parse(localStorage.getItem('user_orders') || '[]');
                 history.unshift(newOrder);
                 localStorage.setItem('user_orders', JSON.stringify(history));
-                // ---------------------------------------------------------
 
                 cart = [];
+                localStorage.removeItem('watermar_cart');
+                
                 updateCartUI();
                 closeModal();
                 closeCart();
                 showSuccessToast('Заявка принята!', 'Мы свяжемся с вами скоро', false);
                 orderForm.reset();
-            } else {
-                throw new Error('Server Error');
-            }
-
+            } else { throw new Error('Ошибка сервера'); }
         } catch (error) {
-            console.error('Ошибка:', error);
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]); 
-            showSuccessToast('Сервер недоступен', 'Попробуйте пожалуйста через пару минут', true);
+            showSuccessToast('Сервер недоступен', 'Попробуйте позже', true);
         } finally {
             submitBtn.innerHTML = originalBtnText;
             submitBtn.disabled = false;
@@ -124,12 +122,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    
+    manageChatButton();
 });
 
+// ==========================================
 // 4. ФУНКЦИИ КОРЗИНЫ
+// ==========================================
 function openCart() {
-    const overlay = document.getElementById('cart-modal-overlay');
-    overlay?.classList.add('active');
+    document.getElementById('cart-modal-overlay')?.classList.add('active');
     document.body.style.overflow = 'hidden';
     updateCartUI();
 }
@@ -141,56 +142,83 @@ function closeCart() {
 
 function addToCart(id) {
     const product = productsData[id];
-    if (product) {
-        cart.push(product);
-        updateCartUI();
-        closeProductModal();
-        showSuccessToast('Добавлено!', `${product.title} теперь в корзине`);
+    if (!product) return;
+
+    // Считываем свежие данные из памяти перед изменением
+    cart = JSON.parse(localStorage.getItem('watermar_cart')) || [];
+    
+    const existingItem = cart.find(item => item.id === id);
+    const qtyToAdd = window.currentQuantity || 1;
+
+    if (existingItem) {
+        existingItem.quantity += qtyToAdd;
+    } else {
+        cart.push({
+            id: id,
+            title: product.title,
+            price: product.price,
+            img: product.img,
+            quantity: qtyToAdd
+        });
     }
+
+    localStorage.setItem('watermar_cart', JSON.stringify(cart));
+    window.currentQuantity = 1; 
+    
+    updateCartUI();
+    closeProductModal();
+    showSuccessToast('Добавлено!', product.title, false);
 }
 
 function updateCartUI() {
-    const countLabel = document.getElementById('cart-count');
-    const list = document.getElementById('cart-items-list');
-    const totalBlock = document.getElementById('cart-total-block');
-    const totalPriceSum = document.getElementById('total-price-sum');
+    // Подтягиваем актуальное состояние
+    cart = JSON.parse(localStorage.getItem('watermar_cart')) || [];
     
-    if (countLabel) countLabel.textContent = cart.length;
+    const countLabels = document.querySelectorAll('#cart-count'); // Ищем все счетчики (и в каталоге, и на главной)
+    const lists = document.querySelectorAll('#cart-items-list'); // Ищем все списки
+    const totalBlocks = document.querySelectorAll('#cart-total-block');
+    const totalPriceSums = document.querySelectorAll('#total-price-sum');
+    
+    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+    countLabels.forEach(label => label.textContent = totalQty);
+
     if (cart.length === 0) {
-        if (list) list.innerHTML = '<p style="color: #666; text-align: center; padding: 40px 20px;">Корзина пока пуста...</p>';
-        if (totalBlock) totalBlock.style.display = 'none';
+        lists.forEach(list => list.innerHTML = '<p style="color: #666; text-align: center; padding: 40px 20px;">Корзина пока пуста...</p>');
+        totalBlocks.forEach(block => block.style.display = 'none');
         return;
     }
     
-    if (totalBlock) totalBlock.style.display = 'block';
+    totalBlocks.forEach(block => block.style.display = 'block');
     
-    if (list) {
-        list.innerHTML = '';
-        let total = 0;
-        cart.forEach((item, index) => {
-            // ФИКС: Берем цену напрямую, так как это число
-            const priceValue = typeof item.price === 'number' ? item.price : parseInt(item.price.toString().replace(/\s/g, '')) || 0;
-            total += priceValue;
-            const imgSrc = item.img.includes('http') ? item.img : `./img/${item.img}`;
+    let total = 0;
+    let htmlContent = '';
 
-            list.innerHTML += `
-                <div class="cart-item-row">
-                    <div class="cart-item-content">
-                        <div class="cart-item-img-container"><img src="${imgSrc}" alt="${item.title}"></div>
-                        <div class="cart-item-details">
-                            <div class="cart-item-title">${item.title}</div>
-                            <div class="cart-item-info-line">1 шт. x ${item.price.toLocaleString()} ₴</div>
-                        </div>
+    cart.forEach((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        const imgSrc = `./img/${item.img}`;
+
+        htmlContent += `
+            <div class="cart-item-row">
+                <div class="cart-item-content">
+                    <div class="cart-item-img-container"><img src="${imgSrc}" alt="${item.title}"></div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.title}</div>
+                        <div class="cart-item-info-line">${item.quantity} шт. x ${item.price.toLocaleString()} ₴</div>
                     </div>
-                    <button class="cart-item-remove" onclick="removeFromCart(${index})">&times;</button>
-                </div>`;
-        });
-        if (totalPriceSum) totalPriceSum.textContent = total.toLocaleString() + ' ₴';
-    }
+                </div>
+                <button class="cart-item-remove" onclick="removeFromCart(${index})">&times;</button>
+            </div>`;
+    });
+
+    lists.forEach(list => list.innerHTML = htmlContent);
+    totalPriceSums.forEach(sum => sum.textContent = total.toLocaleString() + ' ₴');
 }
 
 function removeFromCart(index) {
+    cart = JSON.parse(localStorage.getItem('watermar_cart')) || [];
     cart.splice(index, 1);
+    localStorage.setItem('watermar_cart', JSON.stringify(cart));
     updateCartUI();
 }
 
@@ -199,14 +227,18 @@ function checkoutCart() {
     openModal('cart_checkout');
 }
 
-// 5. ФУНКЦИИ МОДАЛОК
+// ==========================================
+// 5. МОДАЛКИ И КАТАЛОГ
+// ==========================================
 function openModal(type) {
     const overlay = document.getElementById('modal-overlay');
     const title = document.getElementById('modal-title');
     const serviceNames = { 'master': 'Вызов мастера', 'analysis': 'Анализ воды', 'call': 'Заказать звонок', 'cart_checkout': 'Оформление заказа' };
     
     if (title) title.textContent = serviceNames[type] || 'Заявка';
-    document.getElementById('order-form').dataset.service = type;
+    const form = document.getElementById('order-form');
+    if (form) form.dataset.service = type;
+    
     overlay?.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -216,79 +248,46 @@ function closeModal() {
     document.body.style.overflow = '';
 }
 
-
-
-function closeProductModal() {
-    document.getElementById('product-modal-overlay')?.classList.remove('active');
-    document.body.style.overflow = '';
-}
-
-// Закрытие по клику на фон
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            closeModal();
-            closeProductModal();
-            closeCart();
-            closeOrders(); 
-        }
-    });
-});
-
 function openProductModal(id) {
     const product = productsData[id];
     const content = document.getElementById('product-detail-content');
     const overlay = document.getElementById('product-modal-overlay');
 
     if (content && product) {
-        const imagePath = `./img/${product.img}`; 
-        
+        window.currentQuantity = 1;
         content.classList.add('product-mode');
-
-        // ПЕРЕСТАВИЛИ: Сначала описание, потом цена
         content.innerHTML = `
             <div class="modal-image-container">
-                <img src="${imagePath}" alt="${product.title}" class="modal-top-img">
+                <img src="./img/${product.img}" alt="${product.title}" class="modal-top-img">
             </div>
-            
             <div class="modal-text-section">
                 <h2 class="modal-title">${product.title}</h2>
-                
                 <p class="modal-subtitle">${product.desc}</p>
-                
                 <div class="price-large" style="margin-top: 10px;">${product.price.toLocaleString()} ₴</div>
-                
-                <button class="btn-add-cart" style="width: 100%; margin: 0;" onclick="addToCart('${id}')">
+                <button class="btn-add-cart" style="width: 100%; margin-top: 15px;" onclick="addToCart('${id}')">
                     Добавить в корзину
                 </button>
             </div>`;
-        
         overlay?.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 }
 
-// content.classList.remove('product-mode'); // Это вернет отступы
-
-// 6. УВЕДОМЛЕНИЯ
-function showSuccessToast(title, desc, isError = false) {
-    const toast = document.getElementById('toast');
-    const tTitle = document.querySelector('.toast-title');
-    const tDesc = document.querySelector('.toast-desc');
-    const tIcon = document.querySelector('.toast-icon');
-    
-    // Если иконки нет в HTML, скрипт всё равно должен показать плашку
-    if (toast && tTitle && tDesc) {
-        tTitle.textContent = title;
-        tDesc.textContent = desc;
-        isError ? toast.classList.add('error') : toast.classList.remove('error');
-        if (tIcon) tIcon.textContent = isError ? '✕' : '✓';
-        toast.classList.add('active');
-        setTimeout(() => toast.classList.remove('active'), 4000);
-    }
+function closeProductModal() {
+    document.getElementById('product-modal-overlay')?.classList.remove('active');
+    document.body.style.overflow = '';
 }
 
-// 7. КАТАЛОГ ТОВАРОВ ФУЛЛ 
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+        closeModal();
+        closeProductModal();
+        closeCart();
+        closeSideMenu();
+        closeOrders();
+    }
+});
+
 function openCatalog() {
     const home = document.getElementById('home-page');
     const catalog = document.getElementById('full-catalog-page');
@@ -297,6 +296,7 @@ function openCatalog() {
         catalog.style.display = 'block';
         window.scrollTo(0, 0);
         filterCatalog('all');
+        updateCartUI(); // Синхронизируем корзину при входе
     }
 }
 
@@ -306,7 +306,7 @@ function closeCatalog() {
     if (home && catalog) {
         catalog.style.display = 'none';
         home.style.display = 'block';
-        document.body.style.overflow = '';
+        updateCartUI(); // Синхронизируем корзину при выходе
     }
 }
 
@@ -314,20 +314,12 @@ function filterCatalog(category = 'all') {
     const grid = document.getElementById('full-catalog-grid');
     if (!grid) return;
     grid.innerHTML = ''; 
-    const productsArray = Object.values(productsData);
-    const filtered = category === 'all' ? productsArray : productsArray.filter(p => p.category === category);
-
-    if (filtered.length === 0) {
-        grid.innerHTML = '<p style="color: #666; text-align: center; grid-column: 1/-1; padding: 40px;">Товары скоро появятся...</p>';
-        return;
-    }
-
-    filtered.forEach(product => {
-        const id = Object.keys(productsData).find(key => productsData[key] === product);
-        // ФИКС: Красивый вывод цены в карточке каталога
+    
+    Object.keys(productsData).forEach(id => {
+        const product = productsData[id];
         grid.innerHTML += `
             <div class="product-card" onclick="openProductModal('${id}')">
-                <div class="product-img-wrapper"><img src="./img/${product.img}" alt="${product.title}" loading="lazy"></div>
+                <div class="product-img-wrapper"><img src="./img/${product.img}" alt="${product.title}"></div>
                 <div class="product-info">
                     <h3 class="product-title">${product.title}</h3>
                     <div class="product-price-row">
@@ -339,61 +331,51 @@ function filterCatalog(category = 'all') {
     });
 }
 
-// 8. БУРГЕР И ИСТОРИЯ ЗАКАЗОВ (АУДИТОР)
-function openSideMenu() {
-    const sideMenu = document.getElementById('side-menu-overlay');
-    if (sideMenu) {
-        sideMenu.classList.add('active');
-        document.body.style.overflow = 'hidden';
+// ==========================================
+// 6. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// ==========================================
+function showSuccessToast(title, desc, isError = false) {
+    const toast = document.getElementById('toast');
+    if (toast) {
+        const tTitle = toast.querySelector('.toast-title');
+        const tDesc = toast.querySelector('.toast-desc');
+        if (tTitle) tTitle.textContent = title;
+        if (tDesc) tDesc.textContent = desc;
+        isError ? toast.classList.add('error') : toast.classList.remove('error');
+        toast.classList.add('active');
+        setTimeout(() => toast.classList.remove('active'), 4000);
     }
 }
 
-function closeSideMenu() {
-    const sideMenu = document.getElementById('side-menu-overlay');
-    if (sideMenu) {
-        sideMenu.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-}
+function openSideMenu() { document.getElementById('side-menu-overlay')?.classList.add('active'); }
+function closeSideMenu() { document.getElementById('side-menu-overlay')?.classList.remove('active'); }
 
 function showOrders() {
-    closeSideMenu(); 
-    const ordersOverlay = document.getElementById('orders-overlay');
-    if (ordersOverlay) {
-        ordersOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        renderOrdersList(); 
-    }
+    closeSideMenu();
+    document.getElementById('orders-overlay')?.classList.add('active');
+    renderOrdersList();
 }
 
-function closeOrders() {
-    const ordersOverlay = document.getElementById('orders-overlay');
-    if (ordersOverlay) {
-        ordersOverlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-}
+function closeOrders() { document.getElementById('orders-overlay')?.classList.remove('active'); }
 
 function renderOrdersList() {
     const list = document.getElementById('orders-list');
+    const history = JSON.parse(localStorage.getItem('user_orders') || '[]');
     if (!list) return;
-
-    // Читаем реальные данные из памяти
-    const savedOrders = JSON.parse(localStorage.getItem('user_orders') || '[]');
-
-    if (savedOrders.length > 0) {
-        list.innerHTML = savedOrders.map(order => `
-            <div class="order-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 15px; padding: 18px; margin-bottom: 12px;">
-                <div style="text-align: right; font-size: 11px; color: #46a1df; margin-bottom: 8px; font-weight: 800;">
-                    ${order.date}
-                </div>
-                <div style="font-size: 14px; color: white; line-height: 1.4;">
-                    ${order.item}
-                    <div style="margin-top: 10px; font-size: 18px; font-weight: 800; color: #fff;">${order.price}</div>
-                </div>
-            </div>
-        `).join('');
-    } else {
-        list.innerHTML = '<p style="text-align:center; color:rgba(255,255,255,0.3); margin-top:40px;">История пуста</p>';
-    }
+    list.innerHTML = history.length > 0 
+        ? history.map(o => `<div class="order-card"><small>${o.date}</small><div>${o.item}</div><strong>${o.price}</strong></div>`).join('')
+        : '<p style="text-align:center; opacity:0.3; margin-top:40px;">История пуста</p>';
 }
+
+function manageChatButton() {
+    const chatBtn = document.getElementById('saber-chat-container');
+    if (!chatBtn) return;
+    const cycle = () => {
+        chatBtn.classList.add('visible');
+        setTimeout(() => {
+            chatBtn.classList.remove('visible');
+        }, 30000);
+    };
+    cycle();
+    setInterval(cycle, 90000);
+} 
