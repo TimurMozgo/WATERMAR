@@ -2,162 +2,106 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Каталог | WATERMAR</title>
-    <link rel="stylesheet" href="catalog.css"> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог | WaterMark</title>
+    <link rel="stylesheet" href="./catalog.css">
+    <!-- Иконки Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-    <header class="header">
-        <div class="header-content">
-            <div class="logo-wrapper" id="main-logo" onclick="window.location.href='index.html'">
-                <img src="./img/watermar logo.jpg" alt="Aqua Service" class="logo-img">
-            </div>
-            
-            <div class="header-right">
-                <div class="cart-icon" onclick="openCart()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-                    </svg>
-                    <span class="cart-count">0</span>
-                </div>
-                <div class="menu-btn" onclick="openSideMenu()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div id="side-menu-overlay" class="side-menu-overlay" onclick="closeSideMenu()">
-        <div class="side-menu-content" onclick="event.stopPropagation()">
-            <div class="side-menu-header">
-                <span class="menu-title">НАВИГАЦИЯ</span>
-                <button class="close-side-btn" onclick="closeSideMenu()">&times;</button>
-            </div>
-            <div class="side-menu-body">
-                <a href="index.html" class="menu-item-link">
-                    <div class="menu-item-icon">🏠</div>
-                    <span>На главную</span>
-                </a>
-                <a href="about.html" class="menu-item-link">
-                    <div class="menu-item-icon">ℹ️</div>
-                    <span>О нас</span>
-                </a>
-                <a href="#" class="menu-item-link" onclick="showOrders()">
-                    <span>📋</span> Мои заказы
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div id="saber-chat-container" class="saber-chat-container">
-        <div class="saber-line"></div>
-        <button class="saber-chat-btn" onclick="window.location.href='https://t.me/your_bot'">
-            <span>ЧАТ</span>
-        </button>
-    </div>
-
-    <div id="orders-overlay" class="side-menu-overlay" onclick="closeOrders()">
-        <div class="side-menu-content" onclick="event.stopPropagation()">
-            <div class="side-menu-header">
-                <span class="menu-title">ИСТОРИЯ ЗАКАЗОВ</span>
-                <button class="close-side-btn" onclick="closeOrders()">&times;</button>
-            </div>
-            <div id="orders-list" class="side-menu-body">
-                <div class="order-empty-message" style="text-align: center; color: rgba(255,255,255,0.4); margin-top: 50px;">
-                    История заказов пуста
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="cart-modal-overlay" class="cart-overlay" onclick="closeCart()">
-        <div class="cart-modal-content" onclick="event.stopPropagation()">
-            <div class="cart-header">
-                <h2 class="cart-title">Ваша корзина</h2>
-                <button class="close-cart-btn" onclick="closeCart()">&times;</button>
+    <!-- Шапка сайта -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <img src="./img/watermar logo.jpg" alt="WaterMark">
             </div>
 
-            <div id="cart-items-list" class="cart-items-body"></div>
-
-            <div class="cart-footer">
-                <div class="total-row">
-                    <span class="total-label">Итого:</span>
-                    <span id="cart-total" class="total-amount">0 ₴</span>
-                </div>
-                <button class="checkout-btn" onclick="openCheckout()">Оформить заказ</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="catalog-title-container">
-        <h1>Каталог</h1>
-    </div>
-
-    <div class="category-tabs">
-        <button class="tab-item active" onclick="filterCatalog('all')">Все</button>
-        <button class="tab-item" onclick="filterCatalog('Оборудование')">Оборудование</button>
-        <button class="tab-item" onclick="filterCatalog('Расходные материалы')">Расходные материалы</button>
-        <button class="tab-item" onclick="filterCatalog('Услуги')">Услуги</button>
-    </div>
-
-    <div class="premium-grid" id="full-catalog-grid"></div>
-
-    <div id="toast-added" class="premium-toast">
-        <div class="toast-content">
-            <div class="toast-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            </div>
-            <div class="toast-text">
-                <h4 class="toast-title">Добавлено!</h4>
-                <p class="toast-message">Товар «<span id="toast-product-name">...</span>» теперь в корзине</p>
-            </div>
-        </div>
-        <div class="toast-progress"></div>
-    </div>
-
-    <div id="product-confirm-overlay" class="confirm-overlay" onclick="closeConfirmModal()">
-        <div class="confirm-modal-content" onclick="event.stopPropagation()">
-            <button class="close-confirm" onclick="closeConfirmModal()">&times;</button>
-            <div id="confirm-modal-body"></div>
-        </div>
-    </div>
-
-    <div id="checkout-overlay" class="confirm-overlay" onclick="closeCheckout()">
-        <div class="confirm-modal-content" onclick="event.stopPropagation()">
-            <button class="close-confirm" onclick="closeCheckout()">&times;</button>
-            
-            <div id="checkout-form-container" class="confirm-modal-info-padding">
-                <h2 class="confirm-modal-title">Оформление заказа</h2>
-                <p class="confirm-modal-desc">Оставьте контакты, и мы свяжемся с вами в течение 15 минут.</p>
+            <div class="nav-controls">
+                <!-- Кнопка корзины -->
+                <button class="cart-btn" onclick="toggleCart()">
+                    <i data-lucide="shopping-cart"></i>
+                    <span id="cart-count" class="cart-badge">0</span>
+                </button>
                 
-                <div class="checkout-form">
-                    <input type="text" id="user-name" class="checkout-input" placeholder="Как вас зовут?">
-                    <input type="tel" id="user-phone" class="checkout-input" placeholder="+380 (__) ___-__-__">
-                    
-                    <button class="btn-confirm-final" id="submit-order-btn" onclick="sendOrderToN8N()">
-                        Отправить заявку <i class="fa-regular fa-paper-plane" style="margin-left: 10px;"></i>
-                    </button>
-                </div>
+                <!-- Кнопка меню -->
+                <button class="menu-btn" onclick="toggleMenu()">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Секция каталога -->
+    <section class="catalog-section" id="catalog">
+        <div class="container">
+            <h2 class="section-title">Наш каталог</h2>
+            
+            <div class="category-filter">
+                <button class="category-btn active" data-category="all">Все</button>
+                <button class="category-btn" data-category="filters">Оборудование</button>
+                <button class="category-btn" data-category="osmosis">Расходные материалы</button>
+                <button class="category-btn" data-category="industrial">Услуги</button>
             </div>
 
-            <div id="checkout-success" style="display: none; text-align: center; padding: 40px 20px;">
-                <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
-                <h2 class="confirm-modal-title">Заказ принят</h2>
-                <p class="confirm-modal-desc" style="margin-bottom: 30px;">
-                    Мы свяжемся с вами в ближайшее время !
-                </p>
-                <button class="btn-confirm-final" onclick="closeCheckout()">Закрыть</button>
+            <div class="product-grid" id="product-container">
+                <!-- Товары грузятся из catalog.js -->
             </div>
+        </div>
+    </section>
+
+    <!-- ЭЛЕМЕНТЫ ИНТЕРФЕЙСА -->
+    
+    <!-- 1. Темный фон (Оверлей) -->
+    <div id="overlay" class="overlay"></div>
+
+    <!-- 2. Корзина -->
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h2>Ваша корзина</h2>
+            <button class="close-btn" onclick="toggleCart()">&times;</button>
+        </div>
+
+        <div id="cart-items" class="cart-items">
+            <!-- Товары грузятся через JS -->
+        </div>
+
+        <div class="cart-footer">
+            <div class="total-row">
+                <span class="total-label">Итого:</span>
+                <div class="total-amount-box">
+                    <span id="cart-total">0</span>
+                    <span class="currency-symbol">₴</span>
+                </div>
+            </div>
+            <button class="checkout-btn">Оформить заказ</button>
         </div>
     </div>
 
-    <script src="js/script.js"></script>
+    <!-- 3. НОВОЕ ПОЛНОЭКРАННОЕ МЕНЮ -->
+    <div id="mobile-menu" class="mobile-menu-overlay">
+        <button class="close-mobile-menu" onclick="toggleMenu()">&times;</button>
+        
+        <div class="mobile-menu-content">
+            <nav class="mobile-navigation">
+                <a href="index.html" class="mobile-link">Главная</a>
+                
+                <!-- Активный раздел Каталог -->
+                <a href="catalog.html" class="mobile-link catalog-highlight">
+                    <span>Каталог</span>
+                    <div class="active-dot"></div>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Инициализация иконок -->
+    <script>
+      lucide.createIcons();
+    </script>
+
+    <!-- Скрипты -->
+    <script src="script.js"></script> 
     <script src="catalog.js"></script>
 </body>
 </html>
