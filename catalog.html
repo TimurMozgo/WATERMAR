@@ -14,7 +14,7 @@
     <nav class="navbar">
         <div class="container nav-container">
             <div class="logo">
-                <img src="./img/watermar logo.jpg" alt="WaterMark">
+                <img src="./img/watermar logo.png" alt="WaterMark">
             </div>
 
             <div class="nav-controls">
@@ -39,9 +39,15 @@
             
             <div class="category-filter">
                 <button class="category-btn active" data-category="all">Все</button>
-                <button class="category-btn" data-category="filters">Оборудование</button>
-                <button class="category-btn" data-category="osmosis">Расходные материалы</button>
-                <button class="category-btn" data-category="industrial">Услуги</button>
+                
+                <!-- Было data-category="filters", стало "Оборудование" -->
+                <button class="category-btn" data-category="Оборудование">Оборудование</button>
+                
+                <!-- Было data-category="osmosis", стало "Расходные материалы" -->
+                <button class="category-btn" data-category="Расходные материалы">Расходные материалы</button>
+                
+                <!-- Было data-category="industrial", стало "Услуги" -->
+                <button class="category-btn" data-category="Услуги">Услуги</button>
             </div>
 
             <div class="product-grid" id="product-container">
@@ -91,6 +97,8 @@
                     <span>Каталог</span>
                     <div class="active-dot"></div>
                 </a>
+
+                <a href="about.html" class="mobile-link">О нас</a>
             </nav>
         </div>
     </div>

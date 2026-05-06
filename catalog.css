@@ -23,6 +23,8 @@ body {
     overflow-x: hidden;
 }
 
+/* АНИМАЦИЯ */
+
 /* === ШАПКА (NAVBAR) === */
 .navbar {
     position: fixed;
@@ -50,8 +52,7 @@ body {
 
 .logo img {
     height: 40px;
-    display: block;
-    mix-blend-mode: screen; /* Убирает черный фон логотипа, если он есть */
+    display: block; 
 }
 
 .nav-controls {
@@ -96,8 +97,6 @@ body {
 }
 
 /* БУРГЕРНОЕ МЕНЮ */
-
-/* === МОБИЛЬНОЕ МЕНЮ (FULLSCREEN) === */
 
 .mobile-menu-overlay {
     position: fixed;
@@ -278,78 +277,328 @@ body {
 }
 
 /* === PRODUCT GRID === */
+/* Сетка каталога */
+#product-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Сама карточка */
+/* Сетка каталога */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 30px;
-    padding-bottom: 100px;
+    /* auto-fill создает пустые колонки, не давая одной карточке растянуться во весь экран */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    /* Центрируем сами карточки, если их мало */
+    justify-content: center; 
 }
 
+/* Сама карточка */
 .product-card {
-    background: var(--bg-card);
+    background: #0a0a0f !important;
     border-radius: 28px;
-    padding: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
     border: 1px solid rgba(255, 255, 255, 0.03);
-    transition: var(--transition);
+    transition: all 0.3s ease;
+    
+    /* КРИТИЧНО: ограничение ширины, чтобы карточка не "плыла" */
+    max-width: 380px; 
+    width: 100%;
+    margin: 0 auto; /* Центровка внутри колонки */
 }
 
-.product-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    border-color: rgba(168, 85, 247, 0.2);
-}
-
+/* Контейнер картинки (Белый квадрат) */
 .product-img-box {
     width: 100%;
-    height: 280px;
-    background: #fff;
+    aspect-ratio: 1 / 1;
+    background: #ffffff !important;
     border-radius: 20px;
     overflow: hidden;
     margin-bottom: 20px;
+    display: block;
+    padding: 0 !important; 
 }
 
-.product-img {
+.product-img-box img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    padding: 15px;
+    /* Чтобы было "близко" как на скрине — оставляем cover */
+    object-fit: cover !important; 
+    object-position: center;
+    transition: transform 0.5s ease;
 }
 
-.product-category {
-    color: var(--accent);
+/* Фиолетовая категория */
+.cat {
+    color: #8b5cf6 !important;
+    font-size: 10px;
+    font-weight: 700;
     text-transform: uppercase;
-    font-size: 11px;
     letter-spacing: 2px;
-    font-weight: 700;
     margin-bottom: 10px;
 }
 
-.product-title {
-    font-size: 22px;
-    margin-bottom: 10px;
+/* Цена как на скрине */
+.price {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-.product-desc {
-    color: var(--text-dim);
+/* КНОПКА ПОДРОБНЕЕ ВЫШЕ КНОПКИ ( В КОРЗИНУ ) */
+
+/* Кнопка Подробнее */
+.details-btn {
+    background: transparent !important;
+    color: #9ca3af !important;
+    border: 1px solid rgba(156, 163, 175, 0.3) !important;
+    padding: 12px;
+    border-radius: 12px;
     font-size: 14px;
-    margin-bottom: 25px;
-}
-
-.buy-btn {
-    width: 100%;
-    padding: 16px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    background: #1a1d23;
-    color: white;
-    font-weight: 700;
+    font-weight: 500;
     cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px; /* Отступ до кнопки "В корзину" */
     transition: 0.3s;
 }
 
-.buy-btn:hover {
-    background: var(--accent);
-    transform: scale(1.02);
+.details-btn:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #fff !important;
+    border-color: #fff !important;
+}
+
+/* Стили модального окна */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-img {
+    width: 100% !important;
+    height: 250px !important; 
+    object-fit: cover !important;
+    margin-bottom: 15px;
+    display: block;
+    padding: 0 !important;
+}
+
+.modal-content {
+    background-color: #111218 !important; /* Твой темно-серый фон */
+    width: 90%;
+    max-width: 400px;
+    border-radius: 24px;
+    padding: 12px 24px; /* Убираем падинг сверху, чтобы картинка прилипла к краям */
+    position: relative;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    overflow: hidden; /* Чтобы картинка не вылезала за скругленные углы */
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px; 
+    right: 15px;
+    
+    width: 40px;
+    height: 40px;
+    
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    font-size: 24px; 
+    color: #ffffff;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.6); 
+    border-radius: 50%; 
+    
+    transition: 0.3s;
+    z-index: 100; 
+    padding: 0; 
+    line-height: 1;
+}
+
+.close-modal:hover {
+    background-color: #000000;
+    transform: scale(1.1);
+}
+
+.modal-img {
+    width: 100%;
+    height: 220px; /* Ограничили высоту */
+    object-fit: contain; /* Чтобы товар было видно полностью и без искажений */
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.modal-title {
+    font-size: 18px; 
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.modal-desc {
+    font-size: 14px; /* Стандартный читабельный размер */
+    color: #9ca3af;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+
+.modal-buy-btn {
+    margin-top: 15px;
+    padding: 12px !important; /* Меньше высота кнопки */
+    font-size: 14px !important;
+    border-radius: 10px !important;
+}
+
+.modal-buy-btn:hover {
+    background: #7c3aed !important;
+    transform: translateY(-2px);
+}
+
+/* Кнопка "В корзину" */
+.add-btn {
+    background: #16161d !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: 0.3s;
+}
+
+.add-btn:hover {
+    background: #8b5cf6 !important;
+}
+
+/* АНИМАЦИЯ ПРИ ДОБАВЛЕНИИ ТОВАРА  */
+
+.toast-notification {
+    position: fixed;
+    bottom: -150px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    background: #121214;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+    padding-bottom: 20px; /* Немного места снизу */
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden; /* Важно: чтобы линия была прижата к краю */
+}
+
+.toast-notification.show {
+    bottom: 40px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ИКОНКА ГАЛОЧКИ */
+.toast-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+/* ТЕКСТОВЫЙ БЛОК */
+.toast-content {
+    flex-grow: 1;
+}
+
+.toast-status {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+}
+
+.toast-product-name {
+    display: block;
+    font-size: 12px;
+    color: #888; /* Серый текст */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+/* ПОЛОСКА ПРОГРЕССА (КАК В ВИДЕО) */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px; /* Тонкая и стильная */
+    background: #ffffff; /* Чисто белый цвет */
+    width: 100%;
+    transform-origin: left;
+    transform: scaleX(0); /* По умолчанию скрыта */
+    opacity: 0.8;
+}
+
+/* Анимация линии при появлении уведомления */
+.toast-notification.show .toast-progress {
+    animation: progressAnimation 3s linear forwards;
+}
+
+@keyframes progressAnimation {
+    0% {
+        transform: scaleX(1); /* Линия заполнена */
+    }
+    100% {
+        transform: scaleX(0); /* Линия пуста */
+    }
 }
 
 /* === ПАНЕЛИ (SIDEBARS) — ВЕРСИЯ ПО МАКЕТУ === */
@@ -449,12 +698,43 @@ body {
     gap: 20px;
 }
 
-/* Одиночный товар */
+#cart-sidebar {
+    padding: 20px 10px !important; /* Уменьшаем боковые до минимума */
+}
+
+/* 2. Контейнер списка товаров */
+#cart-items {
+    padding: 0 !important;
+    width: 100%;
+}
+
+/* Контейнер картинки в корзине */
+.cart-item-img {
+    width: 60px; /* Размер можно подправить под себя */
+    height: 60px;
+    flex-shrink: 0;
+    border-radius: 10px; /* Скругление как на макете */
+    overflow: hidden;
+    background: #fff; /* Фон на случай, если картинка прозрачная */
+    display: block;
+    padding: 0 !important; /* Убираем любые внутренние отступы */
+}
+
+.cart-item-img img {
+    width: 100% !important;
+    height: 100% !important;
+    /* КЛЮЧЕВОЙ МОМЕНТ: cover растягивает фото на весь бокс без полей */
+    object-fit: cover !important; 
+    object-position: center;
+}
+
+/* Убираем отступы у самого элемента корзины, чтобы текст был ближе к краю */
 .cart-item {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-bottom: 15px;
+    align-items: center;
+    gap: 12px; /* Расстояние между картинкой и текстом */
+    padding: 10px 0; /* Отступы только сверху и снизу */
+    width: 100%;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -462,12 +742,17 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1; /* МАГИЯ: этот блок забирает всё свободное место и толкает крестик вправо */
+    min-width: 0; /* Защита: чтобы длинный текст не ломал верстку */
 }
 
 .cart-item-title {
     font-weight: 600;
     font-size: 16px;
     color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .cart-item-price {
@@ -483,6 +768,8 @@ body {
     font-size: 18px;
     opacity: 0.6;
     transition: 0.3s;
+    flex-shrink: 0; /* Чтобы крестик всегда оставался своего размера и не сплющивался */
+    margin-left: 10px; /* Небольшой отступ от текста, чтобы не липло вплотную */
 }
 
 .remove-item:hover { opacity: 1; }

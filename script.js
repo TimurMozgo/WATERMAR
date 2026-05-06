@@ -134,7 +134,6 @@ function showToast(name) {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-
 // === 5. ДИНАМИЧЕСКИЕ МОДАЛЬНЫЕ ОКНА (УСЛУГИ) ===
 // Конфиг для категорий, чтобы не плодить HTML
 const serviceData = {

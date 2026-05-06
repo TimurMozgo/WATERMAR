@@ -42,7 +42,7 @@ body {
     backdrop-filter: blur(10px);
 }
 
-.nav-logo { height: 40px; mix-blend-mode: screen; } /* УДАЛЯЕТ ЧЕРНЫЙ ФОН */
+.nav-logo { height: 40px; }
 
 .nav-logo-block {
     margin-right: 20px; 
@@ -66,8 +66,7 @@ body {
 }
 
 .main-logo { 
-    height: 70px; 
-    mix-blend-mode: screen; 
+    height: 70px;
     margin-bottom: 20px; 
 } 
 
@@ -294,17 +293,6 @@ body {
 .btn-ghost-small:hover   { background: #fff; color: #000; }
 
 /* Выбор категории */
-
-.reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.reveal.active {
-    opacity: 1;
-    transform: translateY(0);
-}
 
 /* === 2. ФОН И ОВЕРЛЕЙ === */
 .modal-overlay {
@@ -623,7 +611,6 @@ body {
 
 /* ПЛАШКА УВЕДОМЛЕНИЯ */
 
-/* ПЛАШКА УВЕДОМЛЕНИЯ (ТОСТ) */
 .toast-notification {
     position: fixed;
     bottom: -150px;
@@ -717,7 +704,6 @@ body {
 
 /* ИТОГИ */
 
-/* --- СЕКЦИЯ ПРЕИМУЩЕСТВ --- */
 .features {
     padding: 100px 5% 40px;
     max-width: 1200px;

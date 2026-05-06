@@ -1,0 +1,319 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* БУРГЕРНОЕ МЕНЮ */
+
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 17, 21, 0.98); /* Глубокий темный фон */
+    backdrop-filter: blur(10px);
+    z-index: 3000; /* Чтобы точно было поверх всего */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Состояние при открытии */
+.mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Контент внутри меню */
+.mobile-menu-content {
+    text-align: center;
+    width: 100%;
+    transform: translateY(30px); /* Легкое смещение вниз для анимации */
+    transition: transform 0.5s ease;
+}
+
+.mobile-menu-overlay.active .mobile-menu-content {
+    transform: translateY(0); /* Всплывает при открытии */
+}
+
+/* Кнопка закрытия (Крестик) */
+.close-mobile-menu {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: #616161; /* Серый, как мы делали в корзине */
+    font-size: 45px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.close-mobile-menu:hover {
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+/* Список ссылок */
+.mobile-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    align-items: center; /* Выравнивает все элементы по центру по горизонтали */
+    width: 100%;
+}
+
+.mobile-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 32px;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+    display: block; /* Занимает место ровно по тексту */
+    text-align: center;
+}
+
+.mobile-link:hover {
+    opacity: 1;
+    letter-spacing: 1px;
+}
+
+/* Акцент на разделе КАТАЛОГ */
+.about-highlight {
+    color: #a855f7;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Убираем возможные внешние отступы, которые могли сдвинуть текст */
+    margin: 0; 
+    position: relative;
+    opacity: 1;
+}
+/* Та самая точка-индикатор */
+.active-dot {
+    position: absolute;
+    right: -20px; /* Выносим точку за пределы текста справа */
+    width: 6px;
+    height: 6px;
+    background: #a855f7;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+
+/* Фоновое свечение для Hero секции */
+.about-hero {
+    padding: 100px 0 60px;
+    text-align: center;
+    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+}
+
+.hero-title {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.hero-title span {
+    color: #8b5cf6;
+}
+
+/* Сетка преимуществ */
+.grid-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 60px 0;
+}
+
+.feature-card {
+    background: #111218;
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(139, 92, 246, 0.4);
+}
+
+.icon-box {
+    width: 60px;
+    height: 60px;
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.feature-card p {
+    color: #9ca3af;
+    line-height: 1.6;
+}
+
+/* Секция контактов */
+.contact-footer {
+    padding: 80px 0;
+    text-align: center;
+    background: #090a0f;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.contact-grid {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    transition: color 0.3s;
+}
+
+.contact-item i {
+    color: #8b5cf6;
+}
+
+.contact-item:hover {
+    color: #8b5cf6;
+}
+
+@media (max-width: 768px) {
+    .contact-item {
+        font-size: 20px;
+    }
+}
+
+/* МЕДИА-ЗАПРОС ДЛЯ МОБИЛОК (до 768px) */
+@media (max-width: 768px) {
+    
+    /* 1. Герой-секция: даем тексту дышать */
+    .about-hero {
+        padding: 130px 24px 50px !important; /* Увеличили отступ сверху для чистоты */
+        text-align: center;
+        background: radial-gradient(circle at top, rgba(139, 92, 246, 0.15) 0%, transparent 60%);
+    }
+
+    .hero-title {
+            /* Уменьшаем шрифт, чтобы вся фраза влезла в один ряд */
+            font-size: 22px; 
+            line-height: 1.4;
+            font-weight: 700;
+            margin-bottom: 10px;
+            /* Убираем лишние отступы по бокам, чтобы расширить рабочую область */
+            padding: 0 10px; 
+        }
+
+    .hero-title span {
+        display: block; /* Выносим "с 2004 года" на новую строку */
+        color: #8b5cf6;
+        font-size: 30px;
+        margin-top: 4px;
+    }
+
+    /* 2. Сетка преимуществ */
+    .grid-features {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 20px 16px;
+    }
+
+    .feature-card {
+        padding: 28px 24px;
+        border-radius: 24px; /* Более мягкое скругление */
+        background: #111218;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Глубина */
+    }
+
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        background: rgba(139, 92, 246, 0.08);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 14px;
+        margin-bottom: 18px;
+    }
+
+    .feature-card h3 {
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .feature-card p {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #9ca3af;
+    }
+
+    /* 3. Секция контактов */
+    .contact-footer {
+        padding: 60px 20px;
+        background: linear-gradient(to bottom, #090a0f, #0d0e14);
+    }
+
+    .contact-grid {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .contact-item {
+        background: #16171d;
+        padding: 18px;
+        border-radius: 18px;
+        font-size: 17px;
+        font-weight: 600;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        transition: transform 0.2s;
+    }
+    
+    .contact-item:active {
+        transform: scale(0.98); /* Эффект нажатия как в приложении */
+    }
+
+    /* 4. Навигация */
+    .nav-container {
+        padding: 0 20px;
+        height: 70px;
+    }
+    
+    .logo img {
+        height: 32px;
+    }
+}
