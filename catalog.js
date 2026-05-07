@@ -4,10 +4,9 @@
 
 let products = []; 
 
-// 1. Инициализация корзины
-if (typeof cart === 'undefined') {
-    window.cart = JSON.parse(localStorage.getItem('aqua_cart')) || [];
-}
+// ПРАВИЛЬНО: Сначала берем из памяти, потом создаем переменную
+const savedCart = JSON.parse(localStorage.getItem('aqua_cart')) || [];
+window.cart = savedCart;
 
 // --- ЛОГИКА ИНТЕРФЕЙСА ---
 
@@ -30,26 +29,184 @@ function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
-    cart.push(product);
-    localStorage.setItem('aqua_cart', JSON.stringify(cart));
+    // Ищем, есть ли уже такой товар в корзине
+    const existingItem = window.cart.find(item => item.id === productId);
+
+    if (existingItem) {
+        // Если есть — просто плюсуем
+        existingItem.count = (existingItem.count || 1) + 1;
+    } else {
+        // Если нет — добавляем новый с count: 1
+        window.cart.push({ ...product, count: 1 });
+    }
+
+    localStorage.setItem('aqua_cart', JSON.stringify(window.cart));
     updateCartUI();
     showToast(`${product.name} добавлен в корзину!`);
 }
 
-// Уведомление (Toast)
-function showToast(message) {
-    const existingToast = document.querySelector('.toast-notification');
-    if (existingToast) existingToast.remove();
+// / ПОИСКОВАЯ СТРОКА
 
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.innerText = message;
-    document.body.appendChild(toast);
+function searchProducts() {
+    const query = document.getElementById('product-search').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.product-card'); 
 
+    cards.forEach(card => {
+        const titleContainer = card.querySelector('.product-title');
+        
+        if (titleContainer) {
+            const title = titleContainer.innerText.toLowerCase();
+            
+            // Разбиваем название на отдельные слова
+            const words = title.split(' ');
+            
+            // Проверяем: начинается ли ХОТЯ БЫ ОДНО слово с того, что мы ввели
+            const isMatch = words.some(word => word.startsWith(query));
+            
+            if (isMatch) {
+                card.style.display = ""; // Показываем
+            } else {
+                card.style.display = "none"; // Скрываем
+            }
+        }
+    });
+}
+
+// 1. Изменение количества товара
+function updateQuantity(index, delta) {
+    if (window.cart[index]) {
+        // Используем ТОЛЬКО count
+        let currentCount = window.cart[index].count || 1;
+        currentCount += delta;
+        
+        if (currentCount <= 0) {
+            window.cart.splice(index, 1);
+        } else {
+            window.cart[index].count = currentCount;
+        }
+        
+        localStorage.setItem('aqua_cart', JSON.stringify(window.cart));
+        updateCartUI();
+    }
+}
+
+// 2. Открытие модалки (Универсальное)
+function openOrderModal() {
+    console.log("Запуск оформления...");
+    const modal = document.getElementById('order-modal');
+    const sidebar = document.getElementById('cart-sidebar');
+    
+    // Проверяем оба варианта ID оверлея, которые у тебя встречаются
+    const overlay = document.getElementById('overlay') || document.getElementById('cart-overlay');
+
+    if (modal) {
+        // Прячем корзину и фон
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        
+        // Разблокируем скролл (если был заблокирован корзиной)
+        document.body.style.overflow = ''; 
+
+        // Включаем модалку (используем flex для центрирования из нашего нового CSS)
+        modal.style.display = 'flex';
+        
+        // Добавляем класс для анимации появления (если есть в CSS)
+        setTimeout(() => modal.classList.add('active'), 10);
+    } else {
+        console.error("Критическая ошибка: order-modal не найден!");
+    }
+}
+
+// 3. Закрытие модалки
+function closeOrderModal() {
+    const modal = document.getElementById('order-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300); // Задержка для плавной анимации
+    }
+}
+
+// 4. Отправка заказа
+async function submitOrder() {
+    const nameInput = document.getElementById('customer-name');
+    const phoneInput = document.getElementById('customer-phone');
+    const toast = document.getElementById('success-message');
+
+    if (!nameInput || !phoneInput) return;
+
+    const name = nameInput.value.trim();
+    const phone = phoneInput.value.trim();
+
+    if (!name || !phone) {
+        alert("Пожалуйста, заполните все поля.");
+        return;
+    }
+
+    // 1. Сбор актуальных данных из корзины
+
+    const currentCart = JSON.parse(localStorage.getItem('aqua_cart')) || [];
+    const total = currentCart.reduce((sum, item) => sum + (item.price * (item.count || 1)), 0);
+
+    // 2. Отправка данных на вебхук n8n
+    try {
+        // Мы не используем await перед fetch, чтобы не заставлять клиента ждать ответа сервера
+        fetch('https://tiktiok.xyz/webhook/708aaac4-0733-4a46-ad0c-f919e3c08698', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: "Product Order",
+                customer_name: name,
+                customer_phone: phone,
+                order_items: currentCart,
+                total_amount: total,
+                page_url: window.location.href
+            })
+        });
+        console.log("Данные успешно переданы в обработку");
+    } catch (error) {
+        console.error("Ошибка сети при отправке заказа:", error);
+    }
+
+    // 3. Закрытие формы и уведомление
+    closeOrderModal();
+
+    if (toast) {
+        toast.classList.add('active');
+    }
+
+    // 4. Очистка данных
+    localStorage.removeItem('aqua_cart');
+    
+    // 5. Перезагрузка страницы через 3 секунды
     setTimeout(() => {
-        toast.classList.add('fade-out');
-        setTimeout(() => toast.remove(), 500);
+        if (toast) toast.classList.remove('active');
+        location.reload();
     }, 3000);
+}
+
+// Уведомление (Toast)
+function showToast(name) {
+    let toast = document.querySelector('.toast-notification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        document.body.appendChild(toast);
+    }
+
+    toast.innerHTML = `
+        <div class="toast-icon"><i data-lucide="check"></i></div>
+        <div class="toast-content">
+            <span class="toast-status">Добавлено!</span>
+            <span class="toast-product-name">${name}</span>
+        </div>
+        <div class="toast-progress"></div>
+    `;
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 // Обновление интерфейса корзины
@@ -59,17 +216,23 @@ function updateCartUI() {
     const badges = document.querySelectorAll('.cart-badge');
 
     if (cartContainer) {
-        if (cart.length === 0) {
+        if (window.cart.length === 0) {
             cartContainer.innerHTML = '<p class="empty-msg" style="text-align:center; color:#616161; margin-top:50px;">В корзине пока пусто</p>';
         } else {
-            cartContainer.innerHTML = cart.map((item, index) => `
+            cartContainer.innerHTML = window.cart.map((item, index) => `
                 <div class="cart-item">
                     <div class="cart-item-img">
                         <img src="${item.photo}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=?'">
                     </div>
                     <div class="cart-item-info">
                         <span class="cart-item-title">${item.name}</span>
-                        <span class="cart-item-price">${Number(item.price).toLocaleString()} ₴</span>
+                        <span class="cart-item-price" style="color:#8b5cf6;">${Number(item.price).toLocaleString()} ₴</span>
+                        
+                        <div class="cart-item-qty" style="display:flex; align-items:center; gap:10px; background:#1a1a1a; padding:5px; border-radius:5px; width:fit-content; margin-top:5px;">
+                            <button onclick="updateQuantity(${index}, -1)" style="color:#8b5cf6; background:none; border:none; cursor:pointer; font-size:18px;">−</button>
+                            <span style="color:#fff;">${item.count || 1}</span>
+                            <button onclick="updateQuantity(${index}, 1)" style="color:#8b5cf6; background:none; border:none; cursor:pointer; font-size:18px;">+</button>
+                        </div>
                     </div>
                     <button type="button" class="remove-item" onclick="removeFromCart(${index})">&times;</button>
                 </div>
@@ -77,14 +240,26 @@ function updateCartUI() {
         }
     }
 
-    const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
+    // 1. Считаем итоговую сумму: цена * количество
+    const total = window.cart.reduce((sum, item) => sum + (Number(item.price) * (item.count || 1)), 0);
     if (cartTotal) cartTotal.innerText = total.toLocaleString();
-    badges.forEach(badge => { badge.innerText = cart.length; });
+
+    // 2. ИСПРАВЛЕНО: Считаем общее кол-во всех единиц товара для бейджика
+    const totalItemsCount = window.cart.reduce((sum, item) => sum + (item.count || 1), 0);
+    
+    badges.forEach(badge => { 
+        badge.innerText = totalItemsCount; 
+    });
 }
 
 function removeFromCart(index) {
-    cart.splice(index, 1);
-    localStorage.setItem('aqua_cart', JSON.stringify(cart));
+    // Удаляем элемент из глобального массива
+    window.cart.splice(index, 1);
+    
+    // Сразу сохраняем обновленный массив в память
+    localStorage.setItem('aqua_cart', JSON.stringify(window.cart));
+    
+    // Перерисовываем корзину, чтобы товар исчез с экрана
     updateCartUI();
 }
 

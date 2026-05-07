@@ -167,7 +167,8 @@
         </section>
 
         <!-- Секция КАТАЛОГ -->
-        <section class="catalog">
+
+       <section class="catalog">
             <div class="divider"><span>КОЛЛЕКЦИИ</span></div>
             
             <div class="product-grid">
@@ -180,8 +181,9 @@
                         <span class="cat">HOUSEHOLD</span>
                         <h3>Aqua Pro Under-Sink</h3>
                         <p>5-ступенчатая система с минерализатором.</p>
-                        <div class="price">9900 ₴</div>
-                        <button class="add-btn" onclick="addToCart('Aqua Pro', 35000)">В корзину</button>
+                        <div class="price">35000 ₴</div>
+                        <!-- ВАЖНО: три аргумента, последний — путь к 1.png -->
+                        <button class="add-btn" onclick="addToCart('Aqua Pro', 35000, './img/1.png')">В корзину</button>
                     </div>
                 </div>
 
@@ -194,8 +196,9 @@
                         <span class="cat">PREMIUM</span>
                         <h3>Aqua Ultra Compact</h3>
                         <p>Ультратонкий дизайн под любую мойку.</p>
-                        <div class="price">14100 ₴</div>
-                        <button class="add-btn" onclick="addToCart('Aqua Ultra', 45000)">В корзину</button>
+                        <div class="price">45000 ₴</div>
+                        <!-- ВАЖНО: путь к 2.png -->
+                        <button class="add-btn" onclick="addToCart('Aqua Ultra', 45000, './img/2.png')">В корзину</button>
                     </div>
                 </div>
 
@@ -208,13 +211,14 @@
                         <span class="cat">SMART</span>
                         <h3>Aqua Elite Smart</h3>
                         <p>Автоматическая промывка мембраны.</p>
-                        <div class="price">14963 ₴</div>
-                        <button class="add-btn" onclick="addToCart('Aqua Elite', 62000)">В корзину</button>
+                        <div class="price">62000 ₴</div>
+                        <!-- ВАЖНО: путь к 3.png -->
+                        <button class="add-btn" onclick="addToCart('Aqua Elite', 62000, './img/3.png')">В корзину</button>
                     </div>
                 </div>
             </div>
         </section>
-    </main>
+    </main> 
 
     <!-- ТВОЯ КОРЗИНА (SIDEBAR) -->
     <div id="cart-sidebar" class="cart-sidebar">
@@ -225,10 +229,43 @@
         <div id="cart-items">
             <p class="empty-msg">В корзине пока пусто</p>
         </div>
-        <div class="cart-footer">
-            <div class="total">Итого: <span id="cart-total">0</span> ₴</div>
-            <button class="checkout-btn">Оформить заказ</button>
+       <div class="cart-footer">
+            <div class="total-row">
+                <span class="total-label">Итого:</span>
+                <div class="total-amount-box">
+                    <span id="cart-total">0</span>
+                    <span class="currency-symbol">₴</span>
+                </div>
+            </div>
+            <button class="checkout-btn" onclick="openOrderModal()">Оформить заказ</button>
         </div>
+    </div>
+
+    <div id="order-modal" class="modal">
+        <div class="modal-dialog"> 
+            <div class="modal-content order-form-card">
+                
+                <button class="close-modal-inside" onclick="closeOrderModal()">&times;</button>
+                
+                <h2>Оформление заказа</h2>
+                
+                <div class="input-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="customer-name" placeholder="Ваше имя">
+                </div>
+                
+                <div class="input-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" id="customer-phone" placeholder="+380...">
+                </div>
+                
+                <button class="confirm-order-btn" onclick="submitOrder()">Заказать</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-message" class="success-toast">
+        ✅ Ваш заказ принят! Ожидайте звонка.
     </div>
 
     <!-- Футер -->

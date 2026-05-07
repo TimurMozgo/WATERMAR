@@ -114,7 +114,6 @@
     box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
 }
 
-
 /* Фоновое свечение для Hero секции */
 .about-hero {
     padding: 100px 0 60px;
@@ -210,6 +209,16 @@
 
 .contact-item:hover {
     color: #8b5cf6;
+}
+
+/* FOOTER */
+
+.footer-content {
+    text-align: center;
+    font-weight: 100;
+    font-size: 15px;
+    color: #666;
+    opacity: 0.6;
 }
 
 @media (max-width: 768px) {

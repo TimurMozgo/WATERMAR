@@ -60,6 +60,8 @@ body {
     gap: 12px;
 }
 
+/* КОРЗИНА */
+
 .cart-btn, .menu-btn {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -276,8 +278,206 @@ body {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* ПОИСКОВАЯ СТРОКА */
+
+.search-sticky-container {
+    position: sticky;
+    top: 85px; /* Регулируй этот параметр под высоту своего хедера */
+    width: 100%;
+    z-index: 100;
+    background: #0d0d0f; 
+    
+    /* Добавляем отступ сверху, чтобы отлепить от шапки */
+    padding: 25px 0 15px 0; 
+    
+    /* Центрируем всё содержимое внутри */
+    display: flex;
+    justify-content: center;
+    
+    transition: all 0.3s ease;
+}
+.search-section {
+    padding: 20px 0;
+    margin-top: 80px; /* Чтобы не залезло под фиксированную шапку */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.search-wrapper {
+    position: relative;
+    width: 90%; /* На мобилках будет почти на весь экран */
+    max-width: 550px; /* Идеальная ширина для десктопа */
+    margin: 0 auto; /* Дополнительная страховка центровки */
+}
+#product-search {
+    width: 100%;
+    height: 50px;
+    background: #1a1b23 !important; /* Явно темный фон */
+    border: 2px solid rgba(139, 92, 246, 0.3) !important; /* Фиолетовая рамка */
+    border-radius: 15px;
+    padding: 0 20px 0 50px;
+    color: #fff !important;
+    font-size: 16px;
+    display: block !important; /* Гарантируем видимость */
+    visibility: visible !important;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8b5cf6;
+    z-index: 10;
+}
+
+/* Карточка оформления */
+
+/* 1. ФОН МОДАЛКИ (Затемнение) */
+.modal {
+    display: none; /* Переключается на flex через JS */
+    position: fixed;
+    z-index: 10000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Глубокое затемнение */
+    backdrop-filter: blur(8px); /* Размытие фона */
+}
+
+/* 2. ЦЕНТРИРОВАНИЕ */
+.modal-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* 3. КАРТОЧКА (Стиль Aqua Service) */
+.order-form-card {
+    background: #16171d; /* Цвет из твоей корзины */
+    padding: 40px 30px;
+    border: 1px solid rgba(139, 92, 246, 0.2); /* Едва заметный фиолетовый контур */
+    border-radius: 24px;
+    max-width: 400px;
+    width: 90%;
+    color: white;
+    text-align: center;
+    position: relative; /* Для крестика */
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* 4. КРЕСТИК ВНУТРИ (Тот самый красивый) */
+.close-modal-inside {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.05); /* Легкий фон кружка */
+    border: none;
+    color: #9ca3af;
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s ease;
+    line-height: 1;
+}
+
+.close-modal-inside:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: rotate(90deg); /* Эффектный поворот при наведении */
+}
+
+/* 5. ЗАГОЛОВОК И ПОЛЯ */
+.order-form-card h2 {
+    margin-bottom: 25px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 8px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #8b5cf6; /* Фиолетовый фокус из корзины */
+    background: rgba(139, 92, 246, 0.05);
+}
+
+/* 6. КНОПКА ЗАКАЗАТЬ */
+.confirm-order-btn {
+    width: 100%;
+    padding: 16px;
+    background: #8b5cf6; /* Твой основной фиолетовый */
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.confirm-order-btn:hover {
+    background: #7c3aed;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+}
+
+/* 7. ПЛАШКА УСПЕХА */
+.success-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #10b981; /* Зеленый "Профит" */
+    color: white;
+    padding: 18px 30px;
+    border-radius: 16px;
+    z-index: 10001;
+    font-weight: 600;
+    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.3);
+    display: none;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.success-toast.active {
+    display: block !important;
+    transform: translateY(0);
+    opacity: 1;
+}
+
 /* === PRODUCT GRID === */
-/* Сетка каталога */
 #product-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -287,7 +487,6 @@ body {
     margin: 0 auto;
 }
 
-/* Сама карточка */
 /* Сетка каталога */
 .product-grid {
     display: grid;
@@ -508,7 +707,7 @@ body {
     background: #8b5cf6 !important;
 }
 
-/* АНИМАЦИЯ ПРИ ДОБАВЛЕНИИ ТОВАРА  */
+/* ПЛАШКА УВЕДОМЛЕНИЯ */
 
 .toast-notification {
     position: fixed;
@@ -797,7 +996,7 @@ body {
 .total-amount-box {
     display: flex;
     align-items: center;
-    gap: 35px; /* Разнос цены и значка гривны */
+    gap: 10px; 
     font-size: 24px;
 }
 
@@ -823,6 +1022,16 @@ body {
 .checkout-btn:hover {
     background: #7c3aed;
     transform: translateY(-2px);
+}
+
+/* FOOTER */
+
+.footer-content {
+    text-align: center;
+    font-weight: 100;
+    font-size: 15px;
+    color: #666;
+    opacity: 0.6;
 }
 
 /* === ADAPTATION === */

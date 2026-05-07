@@ -32,6 +32,15 @@
         </div>
     </nav>
 
+    <div class="search-sticky-container">
+        <div class="container">
+            <div class="search-wrapper">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="product-search" placeholder="Поиск фильтров..." onkeyup="searchProducts()">
+            </div>
+        </div>
+    </div>
+
     <!-- Секция каталога -->
     <section class="catalog-section" id="catalog">
         <div class="container">
@@ -80,8 +89,30 @@
                     <span class="currency-symbol">₴</span>
                 </div>
             </div>
-            <button class="checkout-btn">Оформить заказ</button>
+            <button class="checkout-btn" onclick="openOrderModal()">Оформить заказ</button>
         </div>
+    </div>
+
+    <div id="order-modal" class="modal">
+        <div class="modal-dialog"> 
+            <div class="modal-content order-form-card">
+                <button class="close-modal-inside" onclick="closeOrderModal()">&times;</button>
+                <h2>Оформление заказа</h2>
+                <div class="input-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="customer-name" placeholder="Ваше имя">
+                </div>
+                <div class="input-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" id="customer-phone" placeholder="+380...">
+                </div>
+                <button class="confirm-order-btn" onclick="submitOrder()">Заказать</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-message" class="success-toast">
+        ✅ Ваш заказ принят! Ожидайте звонка.
     </div>
 
     <!-- 3. НОВОЕ ПОЛНОЭКРАННОЕ МЕНЮ -->
@@ -102,6 +133,13 @@
             </nav>
         </div>
     </div>
+
+    <!-- Футер -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p>© 2026 Aqua Service. Инженерные решения по очистке воды.</p>
+        </div>
+    </footer>
 
     <!-- Инициализация иконок -->
     <script>
