@@ -217,36 +217,35 @@ function updateCartUI() {
 
     if (cartContainer) {
         if (window.cart.length === 0) {
-            cartContainer.innerHTML = '<p class="empty-msg" style="text-align:center; color:#616161; margin-top:50px;">В корзине пока пусто</p>';
+            cartContainer.innerHTML = '<p class="empty-msg" style="text-align:center; color:var(--gray); margin-top:50px;">В корзине пока пусто</p>';
         } else {
             cartContainer.innerHTML = window.cart.map((item, index) => `
-                <div class="cart-item">
+                <div class="cart-item" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px 0;">
                     <div class="cart-item-img">
-                        <img src="${item.photo}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=?'">
+                        <img src="${item.photo}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=?'" style="border-radius: 10px;">
                     </div>
                     <div class="cart-item-info">
-                        <span class="cart-item-title">${item.name}</span>
-                        <span class="cart-item-price" style="color:#8b5cf6;">${Number(item.price).toLocaleString()} ₴</span>
+                        <span class="cart-item-title" style="color:var(--text-main); font-weight:600;">${item.name}</span>
+                        <!-- ЦЕНА ТЕПЕРЬ СИНЯЯ -->
+                        <span class="cart-item-price" style="color:var(--accent); font-weight:700;">${Number(item.price).toLocaleString()} ₴</span>
                         
-                        <div class="cart-item-qty" style="display:flex; align-items:center; gap:10px; background:#1a1a1a; padding:5px; border-radius:5px; width:fit-content; margin-top:5px;">
-                            <button onclick="updateQuantity(${index}, -1)" style="color:#8b5cf6; background:none; border:none; cursor:pointer; font-size:18px;">−</button>
-                            <span style="color:#fff;">${item.count || 1}</span>
-                            <button onclick="updateQuantity(${index}, 1)" style="color:#8b5cf6; background:none; border:none; cursor:pointer; font-size:18px;">+</button>
+                        <!-- УПРАВЛЕНИЕ КОЛИЧЕСТВОМ В ЦВЕТЕ --card -->
+                        <div class="cart-item-qty" style="display:flex; align-items:center; gap:12px; background:var(--card); padding:8px 12px; border-radius:10px; width:fit-content; margin-top:8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <button onclick="updateQuantity(${index}, -1)" style="color:var(--accent); background:none; border:none; cursor:pointer; font-size:18px; font-weight:bold;">−</button>
+                            <span style="color:var(--text-main); font-weight:600;">${item.count || 1}</span>
+                            <button onclick="updateQuantity(${index}, 1)" style="color:var(--accent); background:none; border:none; cursor:pointer; font-size:18px; font-weight:bold;">+</button>
                         </div>
                     </div>
-                    <button type="button" class="remove-item" onclick="removeFromCart(${index})">&times;</button>
+                    <button type="button" class="remove-item" onclick="removeFromCart(${index})" style="color:#ff4d4d; opacity:0.7;">&times;</button>
                 </div>
             `).join('');
         }
     }
 
-    // 1. Считаем итоговую сумму: цена * количество
     const total = window.cart.reduce((sum, item) => sum + (Number(item.price) * (item.count || 1)), 0);
     if (cartTotal) cartTotal.innerText = total.toLocaleString();
 
-    // 2. ИСПРАВЛЕНО: Считаем общее кол-во всех единиц товара для бейджика
     const totalItemsCount = window.cart.reduce((sum, item) => sum + (item.count || 1), 0);
-    
     badges.forEach(badge => { 
         badge.innerText = totalItemsCount; 
     });

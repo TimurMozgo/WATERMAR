@@ -1,11 +1,18 @@
 /* === ROOT & RESET === */
 :root {
-    --bg-main: #0a0a0c;       /* Более глубокий черный */
-    --bg-card: #111318;
-    --accent: #a855f7;        /* Фиолетовый */
+    /* Глубокий графит вместо черного — выглядит дороже */
+    --bg: #1a1c1e; 
+    /* Тот самый синий из правой части твоего скрина */
+    --accent: #3d8bff; 
+    /* Темно-синий для глубоких градиентов */
+    --accent-blue: #2c5ba9; 
+    /* Стальной серый для текстов */
+    --gray: #9ba1a6; 
+    /* Цвет карточек, чуть светлее фона */
+    --card: #25282b;  
+    /* Плавность оставляем, она работает идеально */
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --text-main: #ffffff;
-    --text-dim: #8e929b;
-    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -16,7 +23,7 @@
 }
 
 body {
-    background-color: var(--bg-main);
+    background: var(--bg);
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
@@ -182,7 +189,7 @@ body {
 
 /* Акцент на разделе КАТАЛОГ */
 .catalog-highlight {
-    color: #a855f7;
+    color: var(--accent);
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 24px;
@@ -199,12 +206,12 @@ body {
 /* Та самая точка-индикатор */
 .active-dot {
     position: absolute;
-    right: -20px; /* Выносим точку за пределы текста справа */
+    right: -20px;
     width: 6px;
     height: 6px;
-    background: #a855f7;
+    background: var(--accent);
     border-radius: 50%;
-    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+    box-shadow: 0 0 10px rgba(61, 139, 255, 0.5);
 }
 
 /* === HEADER === */
@@ -310,17 +317,15 @@ body {
     max-width: 550px; /* Идеальная ширина для десктопа */
     margin: 0 auto; /* Дополнительная страховка центровки */
 }
+
 #product-search {
     width: 100%;
     height: 50px;
-    background: #1a1b23 !important; /* Явно темный фон */
-    border: 2px solid rgba(139, 92, 246, 0.3) !important; /* Фиолетовая рамка */
+    background: #1a1b23 !important;
+    border: 2px solid rgba(61, 139, 255, 0.3) !important;
     border-radius: 15px;
     padding: 0 20px 0 50px;
     color: #fff !important;
-    font-size: 16px;
-    display: block !important; /* Гарантируем видимость */
-    visibility: visible !important;
 }
 
 .search-icon {
@@ -328,7 +333,7 @@ body {
     left: 15px;
     top: 50%;
     transform: translateY(-50%);
-    color: #8b5cf6;
+    color: var(--accent);
     z-index: 10;
 }
 
@@ -458,13 +463,13 @@ body {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    background: #10b981; /* Зеленый "Профит" */
-    color: white;
+    background: #00E5FF; /* Используем нашу бирюзу для успеха */
+    color: #000;
     padding: 18px 30px;
     border-radius: 16px;
     z-index: 10001;
     font-weight: 600;
-    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 15px 35px rgba(0, 229, 255, 0.3);
     display: none;
     transform: translateY(20px);
     opacity: 0;
@@ -475,6 +480,90 @@ body {
     display: block !important;
     transform: translateY(0);
     opacity: 1;
+}
+
+/* ПЛАШКА УВЕДОМЛЕНИЯ */
+
+.toast-notification {
+    position: fixed;
+    bottom: -150px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    background: #121214;
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 16px;
+    padding-bottom: 20px; 
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden; 
+}
+
+.toast-notification.show {
+    bottom: 40px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ИКОНКА ГАЛОЧКИ */
+.toast-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 229, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+/* ТЕКСТОВЫЙ БЛОК */
+.toast-content {
+    flex-grow: 1;
+}
+
+.toast-status {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 2px;
+}
+
+.toast-product-name {
+    display: block;
+    font-size: 12px;
+    color: #888; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+/* ПОЛОСКА ПРОГРЕССА */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px; 
+    background: var(--accent); 
+    width: 100%;
+    transform-origin: left;
+    transform: scaleX(0); 
+    opacity: 0.8;
+}
+
+/* Анимация линии */
+.toast-notification.show .toast-progress {
+    animation: progressAnimation 3s linear forwards;
 }
 
 /* === PRODUCT GRID === */
@@ -490,56 +579,57 @@ body {
 /* Сетка каталога */
 .product-grid {
     display: grid;
-    /* auto-fill создает пустые колонки, не давая одной карточке растянуться во весь экран */
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 25px;
     padding: 40px 20px;
     max-width: 1200px;
     margin: 0 auto;
-    /* Центрируем сами карточки, если их мало */
     justify-content: center; 
 }
 
-/* Сама карточка */
+/* Сама карточка — ТЕПЕРЬ В ЦВЕТЕ --card */
 .product-card {
-    background: #0a0a0f !important;
+    background: var(--card) !important; /* Уходим от черного к графиту */
     border-radius: 28px;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    border: 1px solid rgba(255, 255, 255, 0.03);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Легкий контур для объема */
+    transition: var(--transition);
     
-    /* КРИТИЧНО: ограничение ширины, чтобы карточка не "плыла" */
     max-width: 380px; 
     width: 100%;
-    margin: 0 auto; /* Центровка внутри колонки */
+    margin: 0 auto;
 }
 
-/* Контейнер картинки (Белый квадрат) */
+.product-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent); /* Подсвечиваем синим при наведении */
+}
+
+/* Контейнер картинки */
 .product-img-box {
     width: 100%;
-    aspect-ratio: 1 / 1;
-    background: #ffffff !important;
-    border-radius: 20px;
-    overflow: hidden;
+    aspect-ratio: 1 / 1; 
+    background: #fff;    
+    border-radius: 18px;
     margin-bottom: 20px;
+    overflow: hidden;    
+    padding: 0;          
     display: block;
-    padding: 0 !important; 
 }
 
 .product-img-box img {
     width: 100%;
     height: 100%;
-    /* Чтобы было "близко" как на скрине — оставляем cover */
-    object-fit: cover !important; 
-    object-position: center;
+    object-fit: cover;   
+    object-position: center; 
     transition: transform 0.5s ease;
 }
 
-/* Фиолетовая категория */
+/* Категория — ТЕПЕРЬ В ЦВЕТЕ --accent */
 .cat {
-    color: #8b5cf6 !important;
+    color: var(--accent) !important; /* Вместо фиолетового — наш синий */
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
@@ -547,36 +637,34 @@ body {
     margin-bottom: 10px;
 }
 
-/* Цена как на скрине */
+/* Цена */
 .price {
     font-size: 20px;
     font-weight: 800;
-    color: #fff;
+    color: var(--accent);
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-/* КНОПКА ПОДРОБНЕЕ ВЫШЕ КНОПКИ ( В КОРЗИНУ ) */
-
-/* Кнопка Подробнее */
+/* Кнопка Подробнее — В СТИЛЕ --gray */
 .details-btn {
     background: transparent !important;
-    color: #9ca3af !important;
-    border: 1px solid rgba(156, 163, 175, 0.3) !important;
+    color: var(--gray) !important; /* Стальной серый */
+    border: 1px solid rgba(155, 161, 166, 0.3) !important;
     padding: 12px;
     border-radius: 12px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     width: 100%;
-    margin-bottom: 10px; /* Отступ до кнопки "В корзину" */
-    transition: 0.3s;
+    margin-bottom: 10px;
+    transition: var(--transition);
 }
 
 .details-btn:hover {
     background: rgba(255, 255, 255, 0.05) !important;
-    color: #fff !important;
-    border-color: #fff !important;
+    color: var(--text-main) !important;
+    border-color: var(--text-main) !important;
 }
 
 /* Стили модального окна */
@@ -691,9 +779,9 @@ body {
 
 /* Кнопка "В корзину" */
 .add-btn {
-    background: #16161d !important;
-    color: #fff !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    background: #25282b; 
+    color: #fff;
+    border: 2px solid #3d8bff;
     padding: 16px;
     border-radius: 14px;
     font-size: 14px;
@@ -704,91 +792,10 @@ body {
 }
 
 .add-btn:hover {
-    background: #8b5cf6 !important;
-}
-
-/* ПЛАШКА УВЕДОМЛЕНИЯ */
-
-.toast-notification {
-    position: fixed;
-    bottom: -150px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 320px;
-    background: #121214;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 16px;
-    padding-bottom: 20px; /* Немного места снизу */
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-    opacity: 0;
-    pointer-events: none;
-    overflow: hidden; /* Важно: чтобы линия была прижата к краю */
-}
-
-.toast-notification.show {
-    bottom: 40px;
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* ИКОНКА ГАЛОЧКИ */
-.toast-icon {
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    flex-shrink: 0;
-}
-
-/* ТЕКСТОВЫЙ БЛОК */
-.toast-content {
-    flex-grow: 1;
-}
-
-.toast-status {
-    display: block;
-    font-size: 14px;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 2px;
-}
-
-.toast-product-name {
-    display: block;
-    font-size: 12px;
-    color: #888; /* Серый текст */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 180px;
-}
-
-/* ПОЛОСКА ПРОГРЕССА (КАК В ВИДЕО) */
-.toast-progress {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 2px; /* Тонкая и стильная */
-    background: #ffffff; /* Чисто белый цвет */
-    width: 100%;
-    transform-origin: left;
-    transform: scaleX(0); /* По умолчанию скрыта */
-    opacity: 0.8;
-}
-
-/* Анимация линии при появлении уведомления */
-.toast-notification.show .toast-progress {
-    animation: progressAnimation 3s linear forwards;
+    background: var(--accent);
+    color: #fff; /* Текст на кнопке теперь белый при наведении */
+    border-color: var(--accent);
+    box-shadow: 0 8px 20px rgba(61, 139, 255, 0.3);
 }
 
 @keyframes progressAnimation {
@@ -1008,7 +1015,7 @@ body {
 /* Кнопка заказа */
 .checkout-btn {
     width: 100%;
-    background: #8b5cf6;
+    background: var(--accent);
     color: white;
     border: none;
     padding: 20px;
@@ -1020,7 +1027,7 @@ body {
 }
 
 .checkout-btn:hover {
-    background: #7c3aed;
+    background: #2c5ba9; /* Чуть темнее при наведении */
     transform: translateY(-2px);
 }
 
