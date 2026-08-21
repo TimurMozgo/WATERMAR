@@ -23,11 +23,6 @@
                     <i data-lucide="shopping-cart"></i>
                     <span id="cart-count" class="cart-badge">0</span>
                 </button>
-                
-                <!-- Кнопка меню -->
-                <button class="menu-btn" onclick="toggleMenu()">
-                    <i data-lucide="menu"></i>
-                </button>
             </div>
         </div>
     </nav>
@@ -115,31 +110,28 @@
         ✅ Ваш заказ принят! Ожидайте звонка.
     </div>
 
-    <!-- 3. НОВОЕ ПОЛНОЭКРАННОЕ МЕНЮ -->
-    <div id="mobile-menu" class="mobile-menu-overlay">
-        <button class="close-mobile-menu" onclick="toggleMenu()">&times;</button>
-        
-        <div class="mobile-menu-content">
-            <nav class="mobile-navigation">
-                <a href="index.html" class="mobile-link">Главная</a>
-                
-                <!-- Активный раздел Каталог -->
-                <a href="catalog.html" class="mobile-link catalog-highlight">
-                    <span>Каталог</span>
-                    <div class="active-dot"></div>
-                </a>
-
-                <a href="about.html" class="mobile-link">О нас</a>
-            </nav>
-        </div>
-    </div>
-
     <!-- Футер -->
     <footer class="main-footer">
         <div class="footer-content">
             <p>© 2026 Aqua Service. Инженерные решения по очистке воды.</p>
         </div>
     </footer>
+
+    <!-- НИЖНЕЕ НАВИГАЦИОННОЕ МЕНЮ -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item ">
+            <i data-lucide="home"></i>
+            <span>Главная</span>
+        </a>
+        <a href="catalog.html" class="bottom-nav-item active">
+            <i data-lucide="grid"></i>
+            <span>Каталог</span>
+        </a>
+        <a href="about.html" class="bottom-nav-item">
+            <i data-lucide="info"></i>
+            <span>О нас</span>
+        </a>
+    </nav>
 
     <!-- Инициализация иконок -->
     <script>

@@ -2,70 +2,45 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>О нас | WaterMark</title>
-    <link rel="stylesheet" href="catalog.css"> <!-- Используем общие стили -->
-    <link rel="stylesheet" href="about.css">   <!-- И специфические для этой страницы -->
+    <link rel="stylesheet" href="about.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-    <!-- Навигация (такая же как в каталоге) -->
+    <!-- Навигация -->
     <nav class="navbar">
         <div class="container nav-container">
             <div class="logo">
                 <a href="index.html"><img src="./img/watermar logo.png" alt="WaterMark"></a>
             </div>
-
-            <div class="nav-controls">
-                <button class="menu-btn" onclick="toggleMenu()">
-                    <i data-lucide="menu"></i>
-                </button>
-            </div>
         </div>
     </nav>
 
-    <!-- Полноэкранное меню -->
-    <div id="mobile-menu" class="mobile-menu-overlay">
-        <button class="close-mobile-menu" onclick="toggleMenu()">&times;</button>
-        
-        <div class="mobile-menu-content">
-            <nav class="mobile-navigation">
-                <a href="index.html" class="mobile-link">Главная</a>
-                <a href="catalog.html" class="mobile-link">Каталог</a>
-                
-                <!-- Активный раздел О нас -->
-                <a href="about.html" class="mobile-link about-highlight">
-                    <span>О нас</span>
-                    <div class="active-dot"></div>
-                </a>
-            </nav>
-        </div>
-    </div>
-
+    <!-- HERO СЕКЦИЯ -->
     <section class="about-hero">
         <div class="container">
             <h1 class="hero-title">Чистая вода это наша работа <br> <span>с 2004 года</span></h1>
+            <p class="hero-subtitle">Инженерные решения по очистке воды для дома и бизнеса</p>
         </div>
     </section>
 
+    <!-- СЕТКА ПРЕИМУЩЕСТВ -->
     <section class="features-section">
         <div class="container grid-features">
-            <!-- Надежность -->
             <div class="feature-card">
                 <div class="icon-box"><i data-lucide="shield-check"></i></div>
                 <h3>Надежность</h3>
-                <p>Более 20 лет опыта в сфере водоочистки. Мы знаем всё о системах фильтрации и работаем только с комплектующими от проверенных поставщиков.</p>
+                <p>Более 20 лет опыта в сфере водоочистки. Мы знаем всё о системах фильтрации и работаем только с проверенными поставщиками.</p>
             </div>
 
-            <!-- Качество -->
             <div class="feature-card">
                 <div class="icon-box"><i data-lucide="droplets"></i></div>
                 <h3>Качество</h3>
                 <p>Гарантируем результат и применяем индивидуальный подход к каждой системе, учитывая особенности вашей воды.</p>
             </div>
 
-            <!-- Доверие -->
             <div class="feature-card">
                 <div class="icon-box"><i data-lucide="users"></i></div>
                 <h3>Доверие</h3>
@@ -74,32 +49,57 @@
         </div>
     </section>
 
-    <section class="contact-footer">
+    <!-- КОНТАКТЫ -->
+    <section class="contact-section">
         <div class="container">
-            <h2>Свяжитесь с нами</h2>
+            <h2 class="section-title">Свяжитесь с нами</h2>
             <div class="contact-grid">
                 <a href="tel:0800333222" class="contact-item">
-                    <i data-lucide="phone"></i>
-                    <span>0-800-333-222</span>
+                    <div class="contact-icon"><i data-lucide="phone"></i></div>
+                    <div class="contact-text">
+                        <span class="contact-label">Бесплатно по Украине</span>
+                        <span class="contact-value">0-800-333-222</span>
+                    </div>
                 </a>
                 <a href="tel:0679557222" class="contact-item">
-                    <i data-lucide="phone-call"></i>
-                    <span>067-955-7-222</span>
+                    <div class="contact-icon"><i data-lucide="smartphone"></i></div>
+                    <div class="contact-text">
+                        <span class="contact-label">Менеджер</span>
+                        <span class="contact-value">067-955-7-222</span>
+                    </div>
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- Футер -->
+    <!-- FOOTER -->
     <footer class="main-footer">
-        <div class="footer-content">
+        <div class="container footer-content">
             <p>© 2026 Aqua Service. Инженерные решения по очистке воды.</p>
         </div>
     </footer>
 
+    <!-- НИЖНЯЯ НАВИГАЦИЯ (TMA) -->
+    <nav class="bottom-nav">
+        <!-- Подушка для активного состояния (2 = третий элемент "О нас") -->
+        <div class="bottom-nav-pill" data-pos="2"></div>
+        
+        <a href="index.html" class="bottom-nav-item">
+            <i data-lucide="home"></i>
+            <span>Главная</span>
+        </a>
+        <a href="catalog.html" class="bottom-nav-item">
+            <i data-lucide="grid"></i>
+            <span>Каталог</span>
+        </a>
+        <a href="about.html" class="bottom-nav-item active">
+            <i data-lucide="info"></i>
+            <span>О нас</span>
+        </a>
+    </nav>
+
     <script>
         lucide.createIcons();
     </script>
-    <script src="about.js"></script>
 </body>
 </html>

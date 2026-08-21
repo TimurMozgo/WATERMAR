@@ -217,26 +217,34 @@ function updateCartUI() {
 
     if (cartContainer) {
         if (window.cart.length === 0) {
-            cartContainer.innerHTML = '<p class="empty-msg" style="text-align:center; color:var(--gray); margin-top:50px;">В корзине пока пусто</p>';
+            cartContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px 0; color: var(--text-muted);">
+                    <p>В корзине пока пусто</p>
+                </div>
+            `;
         } else {
             cartContainer.innerHTML = window.cart.map((item, index) => `
-                <div class="cart-item" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px 0;">
+                <div class="cart-item">
                     <div class="cart-item-img">
-                        <img src="${item.photo}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=?'" style="border-radius: 10px;">
+                        <img src="${item.photo}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/65x65?text=No+Image'">
                     </div>
+                    
                     <div class="cart-item-info">
-                        <span class="cart-item-title" style="color:var(--text-main); font-weight:600;">${item.name}</span>
-                        <!-- ЦЕНА ТЕПЕРЬ СИНЯЯ -->
-                        <span class="cart-item-price" style="color:var(--accent); font-weight:700;">${Number(item.price).toLocaleString()} ₴</span>
+                        <span class="cart-item-title">${item.name}</span>
+                        <span class="cart-item-price">${Number(item.price).toLocaleString()} ₴</span>
                         
-                        <!-- УПРАВЛЕНИЕ КОЛИЧЕСТВОМ В ЦВЕТЕ --card -->
-                        <div class="cart-item-qty" style="display:flex; align-items:center; gap:12px; background:var(--card); padding:8px 12px; border-radius:10px; width:fit-content; margin-top:8px; border: 1px solid rgba(255,255,255,0.05);">
-                            <button onclick="updateQuantity(${index}, -1)" style="color:var(--accent); background:none; border:none; cursor:pointer; font-size:18px; font-weight:bold;">−</button>
-                            <span style="color:var(--text-main); font-weight:600;">${item.count || 1}</span>
-                            <button onclick="updateQuantity(${index}, 1)" style="color:var(--accent); background:none; border:none; cursor:pointer; font-size:18px; font-weight:bold;">+</button>
+                        <!-- Классы теперь точно совпадают с твоим CSS -->
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="updateQuantity(${index}, -1)">−</button>
+                            <span class="qty-count">${item.count || 1}</span>
+                            <button class="qty-btn" onclick="updateQuantity(${index}, 1)">+</button>
                         </div>
                     </div>
-                    <button type="button" class="remove-item" onclick="removeFromCart(${index})" style="color:#ff4d4d; opacity:0.7;">&times;</button>
+                    
+                    <!-- Кнопка удаления с правильным классом -->
+                    <button type="button" class="remove-item-btn" onclick="removeFromCart(${index})" title="Удалить товар">
+                        &times;
+                    </button>
                 </div>
             `).join('');
         }
@@ -252,13 +260,8 @@ function updateCartUI() {
 }
 
 function removeFromCart(index) {
-    // Удаляем элемент из глобального массива
     window.cart.splice(index, 1);
-    
-    // Сразу сохраняем обновленный массив в память
     localStorage.setItem('aqua_cart', JSON.stringify(window.cart));
-    
-    // Перерисовываем корзину, чтобы товар исчез с экрана
     updateCartUI();
 }
 
@@ -273,7 +276,7 @@ if (!document.getElementById('productModal')) {
                 <img id="modalImg" class="modal-img" src="" alt="">
                 <h2 id="modalTitle" class="modal-title"></h2>
                 <p id="modalDesc" class="modal-desc"></p>
-                <div id="modalPrice" style="font-size: 22px; font-weight: 700; color: #8b5cf6; margin-top: 15px;"></div>
+                <div id="modalPrice" class="modal-price"></div>
             </div>
         </div>
     `);

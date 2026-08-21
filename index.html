@@ -4,78 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aqua Service — Премиальные системы очистки</title>
-    
     <!-- Шрифты -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    
     <!-- Стили -->
     <link rel="stylesheet" href="style.css">
-    
     <!-- Иконки Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-
     <!-- НАВИГАЦИЯ -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo-block">
                 <img src="./img/watermar logo.png" alt="Logo" class="nav-logo">
             </div>
-            
             <div class="nav-controls">
                 <!-- Кнопка корзины -->
                 <div class="cart-btn" onclick="toggleCart()">
                     <i data-lucide="shopping-cart"></i>
                     <div id="cart-count" class="cart-badge">0</div>
                 </div>
-
-                <!-- Бургер-меню (на перспективу мобилки) -->
-                <div class="menu-btn" onclick="toggleMenu()">
-                    <i data-lucide="menu"></i>
-                </div>
             </div>
         </div>
     </nav>
-
-    <div id="mobile-menu" class="mobile-menu-overlay">
-        <!-- Крестик теперь строго в углу экрана -->
-        <button class="close-mobile-menu" onclick="toggleMenu()">&times;</button>
-        
-        <div class="mobile-menu-content">
-            <nav class="mobile-navigation">
-                <!-- Активный раздел: ГЛАВНАЯ -->
-                <a href="index.html" class="mobile-link active-page">
-                    <span>Главная</span>
-                    <div class="active-dot"></div>
-                </a>
-                <a href="catalog.html" class="mobile-link">Каталог</a>
-                <a href="about.html" class="mobile-link">О нас</a>
-            </nav>
-        </div>
-    </div>
-
+    
     <!-- Оверлей (фон), который должен быть на странице -->
     <div id="overlay" class="overlay"></div>
-
     <main>
         <!-- Секция HERO -->
         <section class="hero">
             <div class="container">
-                
                 <div class="hero-logo-wrap">
                     <img src="./img/watermar logo.png" alt="Aqua Service" class="main-logo">
                 </div>
-
                 <h1 class="hero-title">Чистая вода</h1>
                 <h2 class="hero-subtitle">ВЫСОКИЕ ТЕХНОЛОГИИ</h2>
-                
                 <p class="hero-desc">
                     Профессиональное оборудование для очистки воды. Бытовые фильтры, коттеджные станции и промышленные системы.
                 </p>
             </div>
         </section>
-
         <section class="services-grid">
             <!-- Раздел 1: Вызов мастера -->
             <div class="service-card">
@@ -86,7 +54,6 @@
                 <p>Оперативный выезд на объект для технического осмотра ваших систем, замера давления и поиска неисправностей.</p>
                 <button class="btn-primary-small" onclick="openServiceForm('master')">Вызвать мастера</button>
             </div>
-
             <!-- Раздел 2: Анализ воды -->
             <div class="service-card">
                 <div class="card-icon">
@@ -96,7 +63,6 @@
                 <p>Проводим жесткую проверку воды по 12 ключевым показателям. Вы получите точный протокол и рекомендации по подбору системы фильтрации.</p>
                 <button class="btn-outline-small" onclick="openServiceForm('analysis')">Записаться на тест</button>
             </div>
-
             <!-- Раздел 3: Заказать звонок -->
             <div class="service-card">
                 <div class="card-icon">
@@ -107,19 +73,15 @@
                 <button class="btn-ghost-small" onclick="openServiceForm('call')">Заказать звонок</button>
             </div>
         </section>
-
         <!-- Основной оверлей модального окна -->
         <div id="service-overlay" class="modal-overlay" onclick="closeServiceForm()">
             <div class="modal-window" onclick="event.stopPropagation()">
                 <!-- Кнопка закрытия (крестик) -->
-                <button class="close-modal" onclick="closeServiceForm()">&times;</button>
-                
+                <button class="close-modal" onclick="closeServiceForm()">×</button>
                 <!-- Динамический заголовок -->
                 <h2 id="modal-title">Заказать звонок</h2>
-                
                 <!-- Динамическое описание -->
                 <p id="modal-description">Оставьте ваши контакты, и мы свяжемся с вами в течение 15 минут.</p>
-
                 <form id="request-form">
                     <div class="input-field">
                         <input type="text" id="user-name" placeholder="Как Вас зовут?" required>
@@ -127,7 +89,6 @@
                     <div class="input-field">
                         <input type="tel" id="user-phone" placeholder="+380 (__) ___-__-__" required>
                     </div>
-                    
                     <!-- Динамическая кнопка с градиентом -->
                     <button type="submit" class="gradient-submit">
                         <span id="modal-btn-text">Отправить заявку</span>
@@ -139,7 +100,6 @@
                 </form>
             </div>
         </div>
-
         <!-- Секция ПРЕИМУЩЕСТВА -->
         <section class="features">
             <div class="features-grid">
@@ -165,12 +125,9 @@
                 </div>
             </div>
         </section>
-
         <!-- Секция КАТАЛОГ -->
-
        <section class="catalog">
             <div class="divider"><span>КОЛЛЕКЦИИ</span></div>
-            
             <div class="product-grid">
                 <!-- Карточка 1 -->
                 <div class="product-card">
@@ -186,7 +143,6 @@
                         <button class="add-btn" onclick="addToCart('Aqua Pro', 35000, './img/1.png')">В корзину</button>
                     </div>
                 </div>
-
                 <!-- Карточка 2 -->
                 <div class="product-card">
                     <div class="product-img-box">
@@ -201,7 +157,6 @@
                         <button class="add-btn" onclick="addToCart('Aqua Ultra', 45000, './img/2.png')">В корзину</button>
                     </div>
                 </div>
-
                 <!-- Карточка 3 -->
                 <div class="product-card">
                     <div class="product-img-box">
@@ -217,14 +172,16 @@
                     </div>
                 </div>
             </div>
-        </section>
-    </main> 
 
+            <a href="./catalog.html" class="btn_more">Смотреть больше</a>
+
+        </section>
+    </main>
     <!-- ТВОЯ КОРЗИНА (SIDEBAR) -->
     <div id="cart-sidebar" class="cart-sidebar">
         <div class="cart-header">
             <h2>Ваша корзина</h2>
-            <button onclick="toggleCart()" class="close-cart">&times;</button>
+            <button onclick="toggleCart()" class="close-cart">×</button>
         </div>
         <div id="cart-items">
             <p class="empty-msg">В корзине пока пусто</p>
@@ -240,41 +197,48 @@
             <button class="checkout-btn" onclick="openOrderModal()">Оформить заказ</button>
         </div>
     </div>
-
     <div id="order-modal" class="modal">
-        <div class="modal-dialog"> 
+        <div class="modal-dialog">
             <div class="modal-content order-form-card">
-                
-                <button class="close-modal-inside" onclick="closeOrderModal()">&times;</button>
-                
+                <button class="close-modal-inside" onclick="closeOrderModal()">×</button>
                 <h2>Оформление заказа</h2>
-                
                 <div class="input-group">
                     <label>Ваше имя</label>
                     <input type="text" id="customer-name" placeholder="Ваше имя">
                 </div>
-                
                 <div class="input-group">
                     <label>Номер телефона</label>
                     <input type="tel" id="customer-phone" placeholder="+380...">
                 </div>
-                
                 <button class="confirm-order-btn" onclick="submitOrder()">Заказать</button>
             </div>
         </div>
     </div>
-
     <div id="success-message" class="success-toast">
         ✅ Ваш заказ принят! Ожидайте звонка.
     </div>
-
     <!-- Футер -->
     <footer class="main-footer">
         <div class="footer-content">
             <p>© 2026 Aqua Service. Инженерные решения по очистке воды.</p>
         </div>
     </footer>
-
+    
+    <!-- НИЖНЕЕ НАВИГАЦИОННОЕ МЕНЮ -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item active">
+            <i data-lucide="home"></i>
+            <span>Главная</span>
+        </a>
+        <a href="catalog.html" class="bottom-nav-item">
+            <i data-lucide="grid"></i>
+            <span>Каталог</span>
+        </a>
+        <a href="about.html" class="bottom-nav-item">
+            <i data-lucide="info"></i>
+            <span>О нас</span>
+        </a>
+    </nav>
     <!-- Логика -->
     <script src="script.js"></script>
     <script>
