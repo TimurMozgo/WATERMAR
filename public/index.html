@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru" data-motion="smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071827">
+  <meta name="description" content="WATERMAR — системы очистки воды, расходные материалы и забота о вашей воде.">
+  <title>WATERMAR — чистота каждый день</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./app.css">
+  <link rel="stylesheet" href="./water-theme.css">
+  <link rel="stylesheet" href="./ocean-dark.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <div id="preview-banner" hidden>Локальный просмотр · тестовые данные</div>
+  <header class="topbar">
+    <a href="#catalog" class="brand" aria-label="Aqua Service — каталог"><img class="brand-image" src="./img/aquaservice_logo.png" alt="Aqua Service" width="880" height="282"></a>
+  </header>
+  <main id="app" tabindex="-1" aria-label="Магазин WATERMAR"><div class="loading-state"><div class="spinner"></div><p>Готовим вашу коллекцию</p></div></main>
+  <nav class="dock" aria-label="Основная навигация">
+    <span class="dock-highlight" aria-hidden="true"></span>
+    <a href="#catalog" data-tab="catalog"><span data-icon="catalog"></span><span>Каталог</span></a>
+    <a href="#cart" data-tab="cart"><span class="nav-icon"><span data-icon="bag"></span><span id="cart-badge" hidden>0</span></span><span>Корзина</span></a>
+    <a href="#profile" data-tab="profile"><span data-icon="user"></span><span>Мой профиль</span></a>
+    <a href="#admin" data-tab="admin" hidden><span data-icon="settings"></span><span>Управление</span></a>
+  </nav>
+  <dialog id="sheet" aria-labelledby="sheet-title"><div class="sheet-handle" aria-hidden="true"></div><button class="icon-button sheet-close" id="close-sheet" aria-label="Закрыть"><span data-icon="close"></span></button><div id="sheet-body"></div></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript>Для работы магазина включите JavaScript в настройках браузера.</noscript>
+</body>
+</html>
+

@@ -1,0 +1,14 @@
+Google account: kvitbloom@gmail.com
+Project: Aqua Service
+Editor: https://script.google.com/home/projects/11TA2ShxSit1BWpDWw3ad6HNrsUi3bkjfeJhsYdtzVBNVF_S-Tnm5asGF/edit
+Server source saved in Код.gs as a combined file. Google Sheets API v4 added.
+verifyTableConnection completed successfully on 2026-10-27.
+Verified spreadsheet: База Заказов Watemar (11BZXQFHtglfXM5lbS_0bvQulcS9C_UIh7tBknBSd5UY).
+Verified tabs: Товары TMA, Заказы TMA.
+Pending: secrets, setupStore, web deployment and real end-to-end Telegram test.
+No public deployment or real notifications enabled by this task.
+
+2026-10-27 server setup update: BOT_TOKEN verified via Telegram getMe as @aquaservicer_bot. initializeServer completed successfully. GATEWAY_SECRET generated only in Script Properties. setupStore completed: table schema, media folder, minute notification trigger. Pending jobs: 0. NOTIFICATIONS_ENABLED=false. Web deployment prepared, not published: access All requires user confirmation after automatic approval rejection. ServerSetup.gs exists in live editor. Public frontend and end-to-end test still pending.
+
+2026-10-27 deployment update: User explicitly approved public access All. Version 1 deployed as owner kvitbloom@gmail.com. Endpoint: https://script.google.com/macros/s/AKfycbyE3ctXGYaZ_Dq4jcCTe-PDLR0ZjxohNvncpA_puzvsoc5UvklR7UO4ODA_P1k92-fl_g/exec
+Live verification passed: missing gateway secret returns status 403; authenticated gateway catalog returns products (0 active); missing Telegram initData returns status 401. NOTIFICATIONS_ENABLED=true; pending queue was empty before enabling. No real messages or orders created. Remaining: frontend hosting/proxy configuration, real catalog, APP_URL and full Telegram order/decision delivery test. ServerSetup.gs local copy matches editor; verification helper added after version 1, production handlers unchanged.

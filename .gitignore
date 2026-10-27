@@ -1,0 +1,11 @@
+node_modules/
+.wrangler/
+.dev.vars
+.env*
+!.env.example
+work/
+*.log
+
+.netlify/
+apps-script-deployed.png
+apps-script-connected.png
