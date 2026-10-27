@@ -29,7 +29,16 @@ function saveStore(key, value) { try { localStorage.setItem(key, JSON.stringify(
 const saved = readStore('watermar.cart.v2', []);
 const state = { products: [], cart: Array.isArray(saved) ? saved.filter(i => typeof i?.id === 'string' && Number.isInteger(i.count) && i.count > 0 && i.count <= 99).slice(0,50) : [], user: null, admin: false, preview: false, category: 'Все', query: '', tab: 'catalog', orders: [], hasMore: false, loading: true, error: '', authError: '', adminProducts: [], adminSection: 'products', editor: null, pending: false };
 let toastTimer, modalFocus, closeTimer, routeVersion = 0;
-async function api(path, options = {}) { return storeApi(path, options, telegram?.initData || ''); }
+const reads = new Map();
+let ordersLoaded = false, ordersUpdated = 0, adminUpdated = 0;
+async function api(path, options = {}) {
+  if (options.method && options.method !== 'GET') {
+    ordersUpdated = adminUpdated = 0;
+    return storeApi(path, options, telegram?.initData || '');
+  }
+  if (!reads.has(path)) reads.set(path,storeApi(path, options, telegram?.initData || '').finally(()=>reads.delete(path)));
+  return reads.get(path);
+}
 function toast(message) { const el = $('#toast'); el.textContent = message; el.classList.add('visible'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('visible'), 2800); }
 function haptic() { try { telegram?.HapticFeedback?.impactOccurred('light'); } catch {} }
 function persistCart() { saveStore('watermar.cart.v2', state.cart); updateBadge(); }
@@ -85,11 +94,13 @@ function history() {
   return `<section class="page"><a class="back-link" href="#profile">${icon('back')}Мой профиль</a><header class="page-header" style="padding-top:0"><h1>Все заказы</h1><p>Каждая покупка — в одном месте.</p></header>${state.orders.map(o => `<article class="order-group"><div class="order-meta"><span>Заказ № ${esc(o.code)}<br><span class="muted">${date(o.created_at)}</span></span>${orderStatus(o)}</div>${rejectionNote(o)}${o.items.map(i=>itemHistory(i,o,false)).join('')}<div class="order-total"><span>Сумма заказа</span><strong>${money(o.total)} ₴</strong></div></article>`).join('') || empty('Пока нет заказов','Ваши покупки появятся здесь.','clock')}${state.hasMore ? '<button class="secondary wide" data-action="load-orders">Показать ещё</button>' : ''}</section>`;
 }
 async function renderAdmin(version, returnOnly = false) {
-  const [result,sync,orders,notifications] = await Promise.all([api('/admin/products'),api('/admin/sync'),api('/admin/orders'),api('/admin/notifications')]);
+  const [result,sync,orders,notifications] = await Promise.all([api('/admin/products'),Promise.resolve({configured:true,pending:0}),api('/admin/orders'),api('/admin/notifications')]);
   if (version !== routeVersion || state.tab !== 'admin') return;
   state.adminProducts = result.products; state.adminOrders=orders.orders; state.adminHasMore=orders.hasMore;
   state.adminPanels = {orders: `<header class="page-header"><h2>Заказы</h2><p>Сначала заявки, ожидающие вашего решения.</p><button class="text-button" data-action="refresh-admin">Обновить заявки</button></header><div class="sync-status">${!notifications.configured ? 'Telegram: отправка сообщений пока не подключена' : `Telegram: в очереди ${notifications.pending}, не доставлено ${notifications.failed}`}${notifications.configured && (notifications.failed || notifications.pending) ? '<button data-action="retry-notifications">Повторить отправку</button>' : ''}</div><div id="admin-orders">${adminOrdersHTML()}</div>`, products: `<header class="page-header admin-top"><div><h2>Товары</h2></div><button class="primary" data-action="new-product">${icon('plus')}Добавить</button></header><div class="sync-status"><span>${!sync.configured ? 'Google Sheets: ожидает подключения' : sync.pending ? `Ожидают записи в таблицу: ${sync.pending}${sync.last_error ? '. Повторим автоматически.' : ''}` : 'Все изменения записаны в Google Sheets'}</span>${sync.configured && sync.pending ? '<button data-action="sync">Повторить</button>' : ''}</div><div class="stack">${result.products.map(p=>`<article class="admin-item"><img src="${esc(safeImage(p.images[0]))}" alt=""><div><h3>${esc(p.name)}</h3><p>${esc(p.category)} · ${money(p.price)} ₴ · ${p.active ? 'В каталоге' : 'Скрыт'}</p></div><button data-action="edit-product" data-id="${esc(p.id)}">Изменить</button></article>`).join('') || empty('Добавьте первый товар','Загрузите фотографии, описание и цену. Товар появится в каталоге после сохранения.','image','<button class="primary" data-action="new-product">Добавить товар</button>')}</div>`};
+  adminUpdated = Date.now();
   const html = `<section class="page"><header class="page-header"><span class="eyebrow">МАГАЗИН AQUA SERVICE</span><h1>Управление</h1></header><div class="admin-sections" aria-label="Разделы управления">${[['products','Добавление товаров','plus'],['orders','Заказы','bag']].map(([id,label,glyph])=>`<button class="admin-section ${state.adminSection===id?'active':''}" aria-pressed="${state.adminSection===id}" aria-controls="admin-panel" data-action="admin-section" data-section="${id}">${icon(glyph)}${label}</button>`).join('')}</div><div id="admin-panel">${state.adminPanels[state.adminSection]}</div></section>`;
+  state.adminHTML = html;
   if (returnOnly) return html;
   $('#app').innerHTML = html;
 }
@@ -128,27 +139,46 @@ async function smoothSwap(target, commit, valid = () => true) {
 async function route() {
   stopSmoothScroll();
   const version = ++routeVersion;
-  const tab = location.hash.slice(1) || 'catalog'; state.tab = ['catalog','cart','profile','history','admin'].includes(tab) ? tab : 'catalog';
+  const tab = location.hash.slice(1) || 'catalog';
+  state.tab = ['catalog','cart','profile','history','admin'].includes(tab) ? tab : 'catalog';
+  const current = () => version === routeVersion;
   if ($('#sheet').open) closeSheet();
   updateNav();
-  let content;
-  $('#app').setAttribute('aria-busy','true');
+  let content, refresh;
   if (state.tab === 'catalog') content = catalog();
   if (state.tab === 'cart') content = cart();
   if (state.tab === 'profile' || state.tab === 'history') {
-    if (state.user) {
-      try { const r = await api('/orders'); if (version !== routeVersion) return; state.orders = r.orders; state.hasMore = r.hasMore; }
-      catch (e) { if (version !== routeVersion) return; content = empty('История пока недоступна',e.message,'clock','<button class="primary" data-action="reload-page">Повторить</button>'); }
-    }
-    content ||= state.tab === 'history' && state.user ? history() : profile();
+    content = state.tab === 'history' && state.user ? history() : profile();
+    if (state.user && !ordersLoaded) content = '<section class="page"><header class="page-header"><h1>'+ (state.tab==='history'?'Все заказы':'Мой профиль') +'</h1></header>'+loading()+'</section>';
+    if (state.user && Date.now()-ordersUpdated>15000) refresh = async () => {
+      const r = await api('/orders');
+      if (!current()) return;
+      state.orders=r.orders;state.hasMore=r.hasMore;ordersLoaded=true;ordersUpdated=Date.now();
+      $('#app').innerHTML=state.tab==='history'?history():profile();
+    };
   }
   if (state.tab === 'admin') {
-    if (!state.admin) content = empty('Раздел для администратора','Войдите через Telegram с аккаунтом владельца магазина.','shield','<a class="primary" href="#profile">Мой профиль</a>');
-    else { try { content = await renderAdmin(version, true); } catch (e) { content = empty('Не удалось загрузить товары',e.message,'image','<button class="primary" data-action="reload-page">Повторить</button>'); } }
+    if (!state.admin) content=empty('Раздел для администратора','Войдите через Telegram с аккаунтом владельца магазина.','shield','<a class="primary" href="#profile">Мой профиль</a>');
+    else {
+      content=state.adminHTML || '<section class="page"><header class="page-header"><h1>Управление</h1></header>'+loading()+'</section>';
+      if(Date.now()-adminUpdated>15000) refresh=()=>renderAdmin(version);
+    }
   }
-  if (version !== routeVersion || !content) return;
-  const commit = () => { if(version!==routeVersion)return; $('#app').innerHTML=content;$('#app').classList.remove('route-exit');$('#app').removeAttribute('aria-busy');if(state.tab==='catalog')renderProducts();window.scrollTo({top:0,behavior:'instant'}); };
-  await smoothSwap($('#app'),commit,()=>version===routeVersion);
+  const transition=smoothSwap($('#app'),()=>{
+    $('#app').innerHTML=content;$('#app').removeAttribute('aria-busy');
+    if(state.tab==='catalog')renderProducts();window.scrollTo({top:0,behavior:'instant'});
+  },current);
+  // Show the destination before waiting for Google.
+  refresh ? Promise.resolve().then(async()=>{
+    // Wait only for the outgoing animation before allowing a refresh to render.
+    await transition;
+    if(current()) await refresh();
+  }).catch(e=>{
+    if(!current())return;
+    if((state.tab==='admin'&&state.adminHTML)||(state.tab!=='admin'&&ordersLoaded))toast(e.message);
+    else $('#app').innerHTML=empty('Не удалось загрузить данные',e.message,'clock','<button class="primary" data-action="reload-page">Повторить</button>');
+  }) : null;
+  await transition;
 }
 async function load() {
   state.loading = true; state.error = ''; renderProducts();
@@ -210,7 +240,7 @@ async function submitCheckout(form) {
   try {
     const quotedTotal = cartLines().reduce((sum,item)=>sum+(item.product?.price||0)*item.count,0);
     const {order} = await api('/orders',{method:'POST',data:{ ...values, items, quotedTotal, requestKey: pending.requestKey }});
-    state.cart=[];persistCart();saveStore('watermar.pending.v2',null);state.pending=false;
+    state.orders=[order,...state.orders.filter(o=>o.id!==order.id)];ordersLoaded=true;ordersUpdated=0;state.cart=[];persistCart();saveStore('watermar.pending.v2',null);state.pending=false;
     if(state.tab==='cart') $('#app').innerHTML=cart();
     openSheet(`<div class="modal-content success-content"><div class="success-symbol">${icon('check')}</div><span class="eyebrow">СПАСИБО ЗА ДОВЕРИЕ</span><h2 id="sheet-title">Заявка получена</h2>${orderStatus(order)}<p>№ ${esc(order.code)}<br>Ожидает подтверждения администратора.<br>Заказ уже доступен в вашем профиле.</p><button class="primary wide" data-action="view-history">Мои заказы ${icon('arrow')}</button></div>`);haptic();
   } catch(e) { form.querySelector('.form-error').textContent=e.message; }
@@ -290,7 +320,7 @@ document.addEventListener('click',async event=>{
     if(action==='admin')location.hash='admin';
     if(action==='admin-section'){
       if(state.adminSection===el.dataset.section)return;
-      state.adminSection=el.dataset.section;
+      state.adminSection=el.dataset.section;state.adminHTML=null;
       document.querySelectorAll('.admin-section').forEach(button=>{const active=button.dataset.section===state.adminSection;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
       await smoothSwap($('#admin-panel'),()=>{$('#admin-panel').innerHTML=state.adminPanels[state.adminSection];});
     }
@@ -336,5 +366,6 @@ window.addEventListener('hashchange',()=>{route();});
 window.addEventListener('storage',event=>{if(event.key==='watermar.cart.v2'){const c=readStore('watermar.cart.v2',[]);if(Array.isArray(c)){state.cart=c.filter(i=>typeof i?.id==='string'&&Number.isInteger(i.count)&&i.count>0&&i.count<=99).slice(0,50);updateBadge();if(state.tab==='cart')$('#app').innerHTML=cart();}}});
 try { telegram?.BackButton?.onClick(()=>{if($('#sheet').open)closeSheet();else location.hash=state.tab==='history'||state.tab==='admin'?'profile':'catalog';}); } catch {}
 updateBadge();route();load();
+
 
 

@@ -3,6 +3,7 @@ const photos = new Map();
 const pendingPhotos = new Map();
 export function imageUrl(path) {
   if (photos.has(path)) return photos.get(path);
+  if (/^\/media\/[a-f0-9-]+\.(png|jpg|webp)$/.test(path || '')) return new URL('./favicon.svg', import.meta.url).href + '#photo=' + encodeURIComponent(path);
   return /^\/img\/[\w.-]+$/.test(path || '') ? new URL('.' + path, import.meta.url).href : new URL('./favicon.svg', import.meta.url).href;
 }
 async function request(path, method, data, initData) {
@@ -27,7 +28,9 @@ async function photo(path) {
     const result = await request(path, 'GET', {}, '');
     if (!['image/png','image/jpeg','image/webp'].includes(result.type)) throw new Error('Неизвестный формат фото');
     const bytes = Uint8Array.from(atob(result.base64), c => c.charCodeAt(0));
+    const placeholder=imageUrl(path);
     photos.set(path, URL.createObjectURL(new Blob([bytes], { type: result.type })));
+    if(typeof document!=='undefined')document.querySelectorAll('img').forEach(img=>{if(img.src===placeholder)img.src=photos.get(path);});
   })().finally(() => pendingPhotos.delete(path)));
   return pendingPhotos.get(path);
 }
@@ -48,7 +51,7 @@ export async function storeApi(path, { method = 'GET', data = {}, file } = {}, i
   collect(result);
   // A broken photo must not turn a successfully saved order into an error.
   const queue = [...images];
-  await Promise.all(Array.from({length:Math.min(3,queue.length)}, async () => {
+  void Promise.all(Array.from({length:Math.min(3,queue.length)}, async () => {
     while(queue.length) { try { await photo(queue.shift()); } catch { /* Render fallback. */ } }
   }));
   return result;
