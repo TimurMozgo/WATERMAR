@@ -16,3 +16,12 @@ test('Pages transport sends signed session in a simple POST and surfaces server 
   assert.ok(imageUrl('https://evil.test/x').endsWith('/public/favicon.svg'));
  } finally {globalThis.fetch=original;}
 });
+test('Uploaded photo is reused locally without a second Drive download',async()=>{
+ const original=globalThis.fetch;let calls=0;
+ try {
+  globalThis.fetch=async()=>{calls++;return Response.json({ok:true,data:{url:'/media/aaaa-bbbb.webp'}});};
+  await storeApi('/admin/images',{method:'POST',file:new Blob(['photo'],{type:'image/webp'})},'signed');
+  await new Promise(r=>setTimeout(r,0));
+  assert.equal(calls,1);assert.match(imageUrl('/media/aaaa-bbbb.webp'),/^blob:/);
+ } finally {globalThis.fetch=original;}
+});

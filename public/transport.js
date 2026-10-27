@@ -42,6 +42,7 @@ export async function storeApi(path, { method = 'GET', data = {}, file } = {}, i
     data = { base64: btoa(binary) };
   }
   const result = await request('/api' + path, method, data, initData);
+  if (file && result.url) photos.set(result.url, URL.createObjectURL(file));
   const images = new Set();
   function collect(value) {
     if (typeof value === 'string' && /^\/media\/[a-f0-9-]+\.(png|jpg|webp)$/.test(value)) images.add(value);

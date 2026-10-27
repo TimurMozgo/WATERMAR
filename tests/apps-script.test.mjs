@@ -26,7 +26,7 @@ test('Apps Script: real Telegram HMAC, admin isolation, RAW writes and durable i
  const h=await harness();assert.equal(h.call('/api/me').data.user.id,'123');assert.equal(h.call('/api/me','GET',{},123,{initData:signed().replace('123','394814448')}).status,401);assert.equal(h.call('/api/me','GET',{},123,{secret:undefined}).ok,true);assert.equal(h.call('/api/orders','POST',checkout,123,{initData:''}).status,401);assert.equal(h.call('/api/admin/orders').status,403);
  assert.equal(h.call('/api/orders','POST',{...checkout,quotedTotal:1}).status,409);
  h.setLose(true);assert.equal(h.call('/api/orders','POST',checkout).ok,false);
- const retry=h.call('/api/orders','POST',checkout);assert.equal(retry.ok,true);assert.equal(retry.data.order.code,'100000');assert.equal(h.tables.get('Заказы TMA').length,1);assert.equal(h.tables.get('Заказы TMA')[0][4],checkout.name);assert.equal(JSON.parse(h.tables.get('Заказы TMA')[0][15]).length,3);
+ const retry=h.call('/api/orders','POST',checkout);assert.equal(retry.ok,true);assert.match(retry.data.order.code,/^[1-9][0-9]{5}$/);assert.equal(h.tables.get('Заказы TMA').length,1);assert.equal(h.tables.get('Заказы TMA')[0][4],checkout.name);assert.equal(JSON.parse(h.tables.get('Заказы TMA')[0][15]).length,3);
  assert.equal(h.call('/api/orders','GET',{},999).data.orders.length,0);
  h.setDeny(true);assert.equal(h.call('/api/orders').status,503);h.setDeny(false);
  h.setFail(true);assert.equal(h.call('/api/orders','POST',{...checkout,requestKey:'another-script-key'}).ok,false);h.setFail(false);assert.equal(h.tables.get('Заказы TMA').length,1);
@@ -52,3 +52,12 @@ test('Apps Script: product validation and hidden catalogue state',async()=>{
  assert.equal(h.call('/api/admin/products/'+added.data.product.id,'PUT',{...p,active:false},394814448).ok,true);assert.equal(h.call('/api/products').data.products.length,1);
 });
 
+test('Random order codes resolve collisions and do not depend on old counter',async()=>{
+ const h=await harness();let sequence=0;
+ h.context.Utilities.getUuid=()=> '00000000-0000-4000-8000-'+String(++sequence).padStart(12,'0');
+ h.props.set('LAST_ORDER_CODE','999999');
+ const first=h.call('/api/orders','POST',checkout).data.order;
+ const second=h.call('/api/orders','POST',{...checkout,requestKey:'random-collision-check'}).data.order;
+ assert.match(first.code,/^[1-9][0-9]{5}$/);assert.match(second.code,/^[1-9][0-9]{5}$/);assert.notEqual(first.code,second.code);
+ assert.equal(h.call('/api/orders','POST',checkout).data.order.code,first.code);
+});

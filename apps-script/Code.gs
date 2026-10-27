@@ -44,9 +44,11 @@ function dispatch(req,user){
   limited('order:'+user.id,8,300);
   const products=rows(TABS.products,'I').map(product).map(p=>({...p,images:JSON.stringify(p.images)}));
   const priced=priceOrder(data.items,products);if(priced.total!==data.quotedTotal)fail(409,'Стоимость изменилась. Обновите корзину.');
-  const high=Math.max(99999,Number(settings().getProperty('LAST_ORDER_CODE')||99999),...all.map(r=>Number(r.v[10])||0));
-  if(high>=999999)fail(503,'Диапазон номеров заказов исчерпан.');const code=String(high+1);
-  settings().setProperty('LAST_ORDER_CODE',code); // A failed write may leave a gap, never a reused code.
+  const used=new Set(all.map(r=>String(r.v[10])));
+  if(used.size>=900000)fail(503,'Диапазон номеров заказов исчерпан.');
+  let candidate=100000+(parseInt(Utilities.getUuid().replace(/-/g,'').slice(0,8),16)%900000);
+  while(used.has(String(candidate)))candidate=candidate===999999?100000:candidate+1;
+  const code=String(candidate); // Allocated under ScriptLock; retries keep the original order.
   const id=Utilities.getUuid(),now=new Date().toISOString();
   const payload={code,customer_name:data.name,phone:data.phone,user_id:user.id,username:user.username,items:JSON.stringify(priced.lines),total:priced.total};
   const pending=[job(user.id,'received',payload),...Array.from(ADMIN_IDS).map(id=>job(id,'owner_new',payload))];
