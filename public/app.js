@@ -161,7 +161,7 @@ async function route() {
     if (!state.admin) content=empty('Раздел для администратора','Войдите через Telegram с аккаунтом владельца магазина.','shield','<a class="primary" href="#profile">Мой профиль</a>');
     else {
       content=state.adminHTML || '<section class="page"><header class="page-header"><h1>Управление</h1></header>'+loading()+'</section>';
-      if(Date.now()-adminUpdated>15000) refresh=()=>renderAdmin(version);
+      if(!state.adminHTML || Date.now()-adminUpdated>15000) refresh=()=>renderAdmin(version);
     }
   }
   const transition=smoothSwap($('#app'),()=>{
@@ -366,6 +366,7 @@ window.addEventListener('hashchange',()=>{route();});
 window.addEventListener('storage',event=>{if(event.key==='watermar.cart.v2'){const c=readStore('watermar.cart.v2',[]);if(Array.isArray(c)){state.cart=c.filter(i=>typeof i?.id==='string'&&Number.isInteger(i.count)&&i.count>0&&i.count<=99).slice(0,50);updateBadge();if(state.tab==='cart')$('#app').innerHTML=cart();}}});
 try { telegram?.BackButton?.onClick(()=>{if($('#sheet').open)closeSheet();else location.hash=state.tab==='history'||state.tab==='admin'?'profile':'catalog';}); } catch {}
 updateBadge();route();load();
+
 
 
 
